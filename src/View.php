@@ -24,6 +24,8 @@ class View
 	 */
     protected static $dir = [];
 
+    protected static $classTemplate;
+
 	/**
 	 * @var Template template 处理该模板文件的Template对象
 	 */
@@ -68,10 +70,14 @@ class View
     {
         $this->file = $this->setFile($view);
 		$this->data = $data;
-		$this->template = new Template($this);
+		$this->template = self::newTemplate($this);
 	}
 
-
+    /**
+     * 设置view对象的fragment
+     * @param string $name 索引的名字
+     * @param Fragment $fragment 一个fragment对象
+     */
     public function setFragment($name, $fragment) 
     {
 		if($this->child instanceof self && $this->child->hasFragment($name)) {
@@ -83,11 +89,20 @@ class View
 		}
     }
 
+    /**
+     * 判断该view是否有名为name的fragment
+     * @param string $name 索引的fragment的名字
+     * @return boolean
+     */
 	public function hasFragment($name) 
 	{
         return isset($this->fragments[$name]);
     }
 
+    /**
+     * 通过name获取view有的一个fragment
+     * @param string $name 索引的fragment名字
+     */
 	public function getFragment($name) 
 	{
         if(!$this->hasFragment($name)) {
@@ -98,13 +113,20 @@ class View
         return $this->fragments[$name];
     }
 
-	public function startFragment($name) 
+    /**
+     * 在模板文件中使用，标记从该方法之后的内容为一个fragment的内容
+     * @param string $name fragment的名字
+     */
+	protected function startFragment($name) 
 	{
 		$this->temp_name = $name;
 		ob_start();
 	}
 
-	public function endFragment() 
+    /**
+     * 在模板文件中使用，标记一个fragment内容结束的地方
+     */
+	protected function endFragment() 
 	{
 		$name = $this->temp_name;
 		if(empty($name)) {
@@ -115,6 +137,9 @@ class View
         $this->setFragment($name, new Fragment($content));
 	}
 
+    /**
+     * 显示一个view
+     */
     public function display() 
     {
 		if(!$this->parent instanceof self && gettype($this->data) === 'array') {
@@ -123,22 +148,40 @@ class View
 		include $this->template->display();
 	}
 
-	public function set($index, $value) 
+    /**
+     * 设置一个变量，在模板中使用
+     * @param string $var 在模板中使用的变量名
+     * @param mixed value 变量的值
+     */
+	public function set($var, $value) 
 	{
-		$this->data[$index] = $value;
+		$this->data[$var] = $value;
 	}
 
+    /**
+     * 获得该View的模板文件的绝对路径
+     */
 	public function getFile() 
 	{
 		return $this->file;
 	}
 
-
-	public function e($idx) 
-	{
-		return $this->view[$idx];
+    /**
+     * 获得一个组合的子View
+     * @param string $idx self::view定义的索引名
+     * @return View 通过$idx返回的view对象
+     */
+    public function e($idx) 
+    {
+        return $this->view[$idx];
 	}
 
+    /**
+     * 添加一个组合的子View
+     * @param string $idx 用于索引的名字
+     * @param View $view View对象
+     * @param boolean $data 是否复制该View的data到子View
+     */
 	public function view($idx, $view, $data=false) 
 	{
 		if($data) {
@@ -149,15 +192,34 @@ class View
 		$this->view[$idx] = $view;
 	}
 
-	public function extend($file, $show=true) 
+    /**
+     * 继承一个View，可以实现或者重写上一个View的fragment
+     * @param string $file view的模板文件
+     */
+	public function extend($file) 
 	{
         $this->parent = new View($file, $this->data);
 		$this->parent->setChild($this);
 	}
 
-	public function setChild($child) {
-		$this->child = $child;
+    /**
+     * 设置孩子，仅仅在self::extend中执行才有效
+     */
+    public function setChild($child) 
+    {
+        if($child->parent->equal($this)) {
+		    $this->child = $child;
+        }
 	}
+
+    /**
+     * 判断当前view是否和所传view相等
+     * @param View $view 待比较的view对象
+     */
+    public function equal($view)
+    {
+        return ($this->getFile() === $view->getFile());
+    }
 
     protected function setFile($view) 
     {
@@ -168,13 +230,32 @@ class View
                 return $file;
             }
         }
-        throw new \InvalidArgumentException(sprintf("%s is not exists", $file));
+        throw new \InvalidArgumentException(
+            sprintf("%s is not exists", $file)
+        );
+    }
+
+    public static function setTemplateClass($templateClass)
+    {
+        self::$templateClass = $templateClass;
+    }
+
+    public static function getTemplateClass()
+    {
+        return self::$templateClass;
+    }
+
+    public static function newTemplate(View $view)
+    {
+        return new self::$templateClass($view);
     }
 
     public static function addViewDir($dir) 
     {
         if(!is_dir($dir)) {
-            throw new \InvalidArgumentException(sprintf("%s is not a directory", $dir));
+            throw new \InvalidArgumentException(
+                sprintf("%s is not a directory", $dir)
+            );
         }
         if(in_array($dir, self::$dir)) {
             return;
@@ -188,4 +269,3 @@ class View
         array_splice(self::$dir, $keys[0], 1);
     }
 }
-?>
