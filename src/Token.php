@@ -11,21 +11,25 @@ class Token {
 
 	public $template;
 
-	public function __construct($reg, $callback, $attrs=null) {
+	public function __construct($reg, $callback, $attrs=null) 
+	{
 		$this->reg = $reg;
 		$this->callback = $callback;
 		$this->attrs = $attrs;
 	}
 
-	public function setTemplate($tmp) {
+	public function setTemplate($tmp) 
+	{
 		$this->template = $tmp;
 	}
 
-	public function result($line) {
+	public function result($line) 
+	{
 		return call_user_func_array($this->callback, [$this, $line]);
 	}
 
-	public function attr_value($name, $line) {
+	public function attr_value($name, $line) 
+	{
 		preg_match(
 			'/\s+'.$name.'\=[\'\"].{1,}[\'\"]/U',
 			$line, $attrarr
@@ -37,7 +41,8 @@ class Token {
 		return preg_replace('/[\'\"\s]/', '', $att);
 	}
 
-	public function var_string($var) {
+	public function var_string($var) 
+	{
 		$vararr = explode('.', $var);
 		$v = '$'.$vararr[0];
 		array_splice($vararr, 0, 1);
@@ -47,12 +52,13 @@ class Token {
 		return $v;
 	}
 
-	public function normal_end() {
+	public function normal_end() 
+	{
 		return '<?php } ?>' . "\n";
 	}
 
-	public function cond($cond) {
+	public function cond($cond) 
+	{
 		return sprintf('<?php if(%s) { ?>'."\n", $cond);
 	}
 }
-?>

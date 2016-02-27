@@ -12,7 +12,7 @@ class Fragment
 
     public function display() 
     {
-        echo $content;
+        echo $this->content;
     }
 
     public function __toString() {

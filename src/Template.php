@@ -1,24 +1,21 @@
 <?php
 namespace Leno\View;
 
-App::uses('Token', 'Leno.View');
-App::uses('Cacher', 'Leno');
-App::uses('View', 'Leno.View');
-/*
- * @name LTemplate
- * @description 模板
- */
-class Template {
+class Template 
+{
 
-	const suffix = '.cache.php';
+	const SUFFIX = '.cache.php';
 
 	protected $viewfile;
 
 	protected $tokens = null; 
 
-	protected $extend_stack = array();
+	private static $cachedir;
 
-	public function __construct($view) {
+	private $cachefile;
+
+	public function __construct($view) 
+	{
 
 		$this->view = $view;
 		$file = $view->getFile();
@@ -27,29 +24,38 @@ class Template {
 				'reg'=> '/\<extend.*\>/U',
 				'callback'=>function($token, $line) {
 					$name = $token->attr_value('name', $line);
-                    return '<?php $this->extend(\''.$name.'\'); ?>'."\n";
+					return '<?php $this->extend(\''.$name.'\'); ?>'."\n";
 				},
 				'attrs'=>['name']
 			],
 			'extend_end' => [
 				'reg'=> '/\<\/extend.*\>/U',
 				'callback'=>function($token, $line) {
-					return "\n";
+					return '<?php $this->parent->display(); ?>'."\n";
 				},
 				'attrs'=>[]
 			],
-			'fragment'=> [
-				'reg'=>'/\<fragment.*?\>/U',
+			'getfragment' => [
+				'reg'=>'/\<fragment.*?\/\>/U',
 				'callback'=>function($token, $line) {
 					$name = $token->attr_value('name', $line);
-					return '<?php echo $this->startFragment(\''.$name.'\'); ?>'."\n";
+					return '<?php $this->getFragment(\''.$name.'\')->display(); ?>'."\n";
 				},
 				'attrs'=>['name']
 			],
-            'fragment_end'=> [
-				'reg'=>'/\<\/fragment_end\>/U',
+			'startfragment'=> [
+				'reg'=>'/\<fragment.*?\>/U',
 				'callback'=>function($token, $line) {
-					return '<?php $this->endFragment(); ?>'."\n";
+					$name = $token->attr_value('name', $line);
+					return '<?php $this->startFragment(\''.$name.'\'); ?>'."\n";
+				},
+				'attrs'=>['name']
+			],
+            'endfragment'=> [
+				'reg'=>'/\<\/fragment\>/U',
+				'callback'=>function($token, $line) {
+					$this->view->endFragment();
+					return '<?php $this->endFragment(); ?>' . "\n";
 				},
 				'attrs'=>[]
             ],
@@ -224,19 +230,18 @@ class Template {
 				'attrs'=>[]
 			],
 		);
+		$this->cachefile = self::$cachedir . '/' .md5($this->view->getFile()) . self::SUFFIX;
 	}
 
-	/*
-	 * @name pass1
-	 * @description 编译模板需要执行两遍，这是第一遍，其作用是将所有需要解析的标签放在一行，第二遍仅仅替换一行的标签即可,目前第一遍未实现，所以用户必须保证所有待解析的标签在一行
-	 */
-	public function pass1() {
+	public function pass1() 
+	{
 		$file = $this->view->getFile();
 		$content = file_get_contents($file);
-		return $content;
+		$this->cache($content);
 	}
 
-	public function dispatch($line) {
+	public function dispatch($line) 
+	{
 		foreach($this->tokens as $stat=>$token) {
 			if(preg_match($token['reg'], $line)) {
 				$this->stat = $stat;
@@ -249,12 +254,9 @@ class Template {
 		return $line;
 	}
 
-	/*
-	 * @name pass2
-	 * @description 编译模板的第二遍，替换标签生成
-	 */
-	public function pass2() {
-		$file = $this->cacher->getFile(); 
+	public function pass2() 
+	{
+		$file = $this->cachefile;
 		$fp = fopen($file, 'r');
 		$content = '';
 		while($line = fgets($fp)) {
@@ -262,33 +264,29 @@ class Template {
 			$content .= $this->dispatch($line);
 		}
 		fclose($fp);
-		return $content;
+		$this->cache($content);
 	}
 
-	public function cache($content) {
-        $file = self::$CACHEDIR . '/' .md5($this->view->getFile()) . self::suffix;
+	public function cache($content) 
+	{
+		$file = $this->cachefile;
         file_put_contents($file, $content);
 	}
 
-	public function display() {
-		$viewfile = $this->view;
-		$cache = $this->cacher->getFile();
+	public function display() 
+	{
+		$viewfile = $this->view->getFile();
+		$cache = $this->cachefile;
 		if(!is_file($cache) || filemtime($cache) <= filemtime($viewfile)) {
 			$content = $this->pass1();
-			$this->cache($content);
 			$content = $this->pass2();
-			$this->cache($content);
 		}
 		return $cache;
 	}
 
-	public function __toString() {
-		$cache = $this->display();
-		return file_get_contents($cache);
-	}
-
-    public static function setCacheDir($dir) {
-        self::$CACHEDIR = $dir;
+	public static function setCacheDir($dir) 
+	{
+        self::$cachedir = $dir;
     }
 }
 ?>
