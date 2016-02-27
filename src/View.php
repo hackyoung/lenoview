@@ -12,7 +12,7 @@ class View
 	/**
 	 * @var array data View对象可以使用的数据,通过View::set方法来设置它
 	 */
-	public $data = array();
+	public $data = [];
 
 	/**
 	 * @var view 的查找路径, 通过View::addViewDir(); 
@@ -32,15 +32,21 @@ class View
 	/**
 	 * @var array view 组合的View
 	 */
-	protected $view = array();
+	protected $view = [];
 
 	/**
 	 * @var View parent 该View的父亲View
 	 */
     protected $parent;
 
+	/**
+	 * @var View child 继承该View的View对象
+	 */
 	protected $child;
 
+	/**
+	 * @var array 该View拥有的Fragment
+	 */
     protected $fragments = [];
 
 	/**
@@ -52,7 +58,13 @@ class View
 	 * @var string temp_name start/endFragment的时候用
 	 */
 	private $temp_name;
-    public function __construct($view, $data=array()) 
+
+	/**
+	 * 构造函数
+	 * @param string $view 基于查找路径的view文件
+	 * @param array $data 模板需要用的参数
+	 */
+    public function __construct($view, $data=[]) 
     {
         $this->file = $this->setFile($view);
 		$this->data = $data;

@@ -1,5 +1,5 @@
 {
-    "name": "hackyoung/lenoview",
+    "name": "leno/view",
     "version": "dev-master",
     "autoload": {
         "psr-4": {
