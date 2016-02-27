@@ -2,7 +2,7 @@
 lenoview 是一个支持继承，组合，分支逻辑，条件判断的简单的PHP模板引擎，其核心代码不超过500行，四个类。方便拓展其功能
 ##安装
 ```pash
-	composer require hackyoung/lenoview
+	composer require leno/view
 ```
 
 ##基本用法
