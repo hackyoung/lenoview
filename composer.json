@@ -1,9 +1,4 @@
 {
     "name": "leno/view",
-    "version": "dev-master",
-    "autoload": {
-        "psr-4": {
-            "Leno\\View\\": "src/"
-        }
-    }
+    "version": "dev-master"
 }
