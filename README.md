@@ -10,10 +10,11 @@ lenoview 是一个支持继承，组合，分支逻辑，条件判断的简单�
 test.php
 ```php
 use \Leno\View\View;
-use \Leno\View\Template;
 
 View::addViewDir(web/view);
-Template::setCacheDir(web/tmp);
+
+$template = View::getTemplateClass();
+$template::setCacheDir(web/tmp);
 
 $view = new View('child');
 $view->display();
@@ -41,4 +42,15 @@ header.lpt.php
 <div class="header">
 	这是外部定义的头
 </div>
+```
+
+重写fragment  childImplement
+
+sschild.lpt.php
+```php
+<extend name="child">
+	<fragment name="childImplement">
+		该部分会重写父类的childImplement
+	</fragment>
+</extend>
 ```
