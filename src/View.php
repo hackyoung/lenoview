@@ -24,7 +24,7 @@ class View
 	 */
     protected static $dir = [];
 
-    protected static $classTemplate;
+    protected static $templateClass = '\Leno\View\Template';
 
 	/**
 	 * @var Template template 处理该模板文件的Template对象

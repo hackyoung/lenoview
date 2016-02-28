@@ -2,8 +2,24 @@
 	<fragment name="child2">
 		这是schild提供的
 		<div>{$div}</div>
-		<ul><llist name="hello" id="h">
-			<li>{$h}</li>
-		</llist></ul>
+        <eq name="hello" value="world" const="true">
+            hello world
+        </eq>
+        <ul>
+            <llist name="hello" id="h">
+                <in name="$h" value="hello">
+                    in
+                </in>
+                <nin name="$h" value="hello">
+                       hhh
+                </nin>
+                <eq name="h" value="3" const="true">
+                    <li>三</li>
+                </eq>
+                <neq name="h" value="3" const="true">
+                    <li>{$h}</li>
+                </neq>
+            </llist>
+        </ul>
 	</fragment>
 </extend>

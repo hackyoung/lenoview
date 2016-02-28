@@ -1,34 +1,18 @@
 <?php
 namespace Leno\View;
 
-class Token {
+abstract class Token 
+{
+    protected $reg;
 
-    private $reg;
+    abstract public function result($line);
 
-    private $callback;
-
-    protected $attrs;
-
-    public $template;
-
-    public function __construct($reg, $callback, $attrs=null) 
+    public function getRegExp()
     {
-        $this->reg = $reg;
-        $this->callback = $callback;
-        $this->attrs = $attrs;
-	}
-
-    public function setTemplate($tmp) 
-    {
-        $this->template = $tmp;
+        return $this->reg;
     }
 
-    public function result($line) 
-    {
-        return call_user_func_array($this->callback, [$this, $line]);
-    }
-
-    public function attr_value($name, $line) 
+    protected function attrValue($name, $line) 
     {
         preg_match(
             '/\s+'.$name.'\=[\'\"].{1,}[\'\"]/U',
@@ -41,7 +25,7 @@ class Token {
         return preg_replace('/[\'\"\s]/', '', $att);
     }
 
-    public function var_string($var) 
+    protected function varString($var) 
     {
         $vararr = explode('.', $var);
         $v = '$'.$vararr[0];
@@ -52,12 +36,12 @@ class Token {
         return $v;
     }
 
-    public function normal_end() 
+    protected function normalEnd() 
     {
         return '<?php } ?>' . "\n";
     }
 
-    public function cond($cond) 
+    protected function condition($cond) 
     {
         return sprintf('<?php if(%s) { ?>'."\n", $cond);
     }
