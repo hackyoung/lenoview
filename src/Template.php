@@ -12,11 +12,11 @@ class Template
     /**
      * 编译之后的文件后缀
      */
-	const SUFFIX = '.cache.php';
+    const SUFFIX = '.cache.php';
 
-	private static $cachedir;
+    private static $cachedir;
 
-	protected $cachefile;
+    protected $cachefile;
 
     protected $view;
 
@@ -47,66 +47,66 @@ class Template
         'notemtyend' => '\Leno\View\Token\NotEmptyEnd',
     ]; 
 
-	public function __construct($view) 
-	{
-		$this->view = $view;
-		$file = $view->getFile();
-		$this->cachefile = self::$cachedir . '/' .md5($this->view->getFile()) . self::SUFFIX;
+    public function __construct($view) 
+    {
+        $this->view = $view;
+        $file = $view->getFile();
+        $this->cachefile = self::$cachedir . '/' .md5($this->view->getFile()) . self::SUFFIX;
         foreach($this->tokenClasses as $k=>$c) {
             $this->tokens[$k] = new $c;
         }
-	}
+    }
 
-	public function pass1() 
-	{
-		$file = $this->view->getFile();
-		$content = file_get_contents($file);
-		$this->cache($content);
-	}
+    public function pass1() 
+    {
+        $file = $this->view->getFile();
+        $content = file_get_contents($file);
+        $this->cache($content);
+    }
 
-	public function dispatch($line) 
-	{
-		foreach($this->tokens as $stat=>$token) {
-			if(preg_match($token->getRegExp(), $line)) {
-				$this->stat = $stat;
-				return $token->result($line);
-			}
-		}
-		return $line;
-	}
+    public function dispatch($line) 
+    {
+        foreach($this->tokens as $stat=>$token) {
+            if(preg_match($token->getRegExp(), $line)) {
+                $this->stat = $stat;
+                return $token->result($line);
+            }
+        }
+        return $line;
+    }
 
-	public function pass2() 
-	{
-		$file = $this->cachefile;
-		$fp = fopen($file, 'r');
-		$content = '';
-		while($line = fgets($fp)) {
-			$this->state = false;
-			$content .= $this->dispatch($line);
-		}
-		fclose($fp);
-		$this->cache($content);
-	}
+    public function pass2() 
+    {
+        $file = $this->cachefile;
+        $fp = fopen($file, 'r');
+        $content = '';
+        while($line = fgets($fp)) {
+            $this->state = false;
+            $content .= $this->dispatch($line);
+        }
+        fclose($fp);
+        $this->cache($content);
+    }
 
-	public function cache($content) 
-	{
-		$file = $this->cachefile;
+    public function cache($content) 
+    {
+        $file = $this->cachefile;
         file_put_contents($file, $content);
-	}
+    }
 
-	public function display() 
-	{
-		$viewfile = $this->view->getFile();
-		$cache = $this->cachefile;
-		if(!is_file($cache) || filemtime($cache) <= filemtime($viewfile)) {
-			$content = $this->pass1();
-			$content = $this->pass2();
-		}
-		return $cache;
-	}
+    public function display() 
+    {
+        $viewfile = $this->view->getFile();
+        $cache = $this->cachefile;
+        if(!is_file($cache) || filemtime($cache) <= filemtime($viewfile)) {
+            $content = $this->pass1();
+            $content = $this->pass2();
+        }
+        return $cache;
+    }
 
-	public static function setCacheDir($dir) 
-	{
+    public static function setCacheDir($dir) 
+    {
         self::$cachedir = $dir;
     }
 }
