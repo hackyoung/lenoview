@@ -15,6 +15,8 @@ class Neq extends \Leno\View\Token
         } else {
             $value = $this->varString($value);
         }
-        return $this->condition($this->varString($name) .'!='. $value);
+        return $this->condition(
+            $this->varString($name) .'!='. $value
+        );
     }
 }
