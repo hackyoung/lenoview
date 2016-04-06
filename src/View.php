@@ -304,9 +304,7 @@ class View
     public static function addViewDir($dir) 
     {
         if(!is_dir($dir)) {
-            throw new \InvalidArgumentException(
-                sprintf("%s is not a directory", $dir)
-            );
+            return;
         }
         if(in_array($dir, self::$dir)) {
             return;
