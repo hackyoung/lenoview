@@ -10,11 +10,6 @@ class View
     const SUFFIX = '.lpt.php';
 
     /**
-     * @var array data View对象可以使用的数据,通过View::set方法来设置它
-     */
-    public $data = [];
-
-    /**
      * @var view 的查找路径, 通过View::addViewDir(); 
      * View::deleteViewDir()两个方法来配置View的搜索路径,
      * View::addViewDir('test');
@@ -24,6 +19,18 @@ class View
      */
     protected static $dir = [
         __DIR__ . '/View',
+    ];
+
+    /**
+     * @var array data View对象可以使用的数据,通过View::set方法来设置它
+     */
+    public $data = [
+        '__head__' => [
+            'title' => '',
+            'keywords' => 'leno,hackyoung,view',
+            'description' => 'a simple framework component',
+            'author' => 'hackyoung@163.com',
+        ]
     ];
 
     protected static $templateClass = '\Leno\View\Template';
@@ -71,12 +78,22 @@ class View
     public function __construct($view, $data=[]) 
     {
         $this->file = $this->setFile($view);
-        $this->data = $data;
+        $this->data = array_merge($data);
         $this->template = self::newTemplate($this);
     }
 
     public function __toString() {
         return $this->display();
+    }
+
+    public function __get($key)
+    {
+        return $this->data[$key];
+    }
+
+    public function __set($key, $val)
+    {
+        $this->data[$key] = $val;
     }
 
     /**
