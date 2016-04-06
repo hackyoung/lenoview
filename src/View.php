@@ -22,7 +22,9 @@ class View
      * View::deleteViewDir('test');
      * View::$dir = [];
      */
-    protected static $dir = [];
+    protected static $dir = [
+        __DIR__ . '/View',
+    ];
 
     protected static $templateClass = '\Leno\View\Template';
 
