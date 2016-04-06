@@ -309,7 +309,7 @@ class View
         if(in_array($dir, self::$dir)) {
             return;
         }
-        self::$dir[] = $dir;
+        array_unshift(self::$dir, $dir);
     }
 
     public static function deleteViewDir($dir) 
