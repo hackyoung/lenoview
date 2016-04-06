@@ -1,5 +1,4 @@
 <?php
-
 namespace Leno\View\Token;
 
 class Extend extends \Leno\View\Token

@@ -75,6 +75,10 @@ class View
         $this->template = self::newTemplate($this);
     }
 
+    public function __toString() {
+        return $this->display();
+    }
+
     /**
      * 设置view对象的fragment
      * @param string $name 索引的名字
@@ -147,7 +151,7 @@ class View
         if(!$this->parent instanceof self && gettype($this->data) === 'array') {
             extract($this->data);
         }
-        include $this->template->display();
+        return include $this->template->display();
     }
 
     /**
