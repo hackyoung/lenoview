@@ -1,5 +1,5 @@
 <?php
-namespace Leno\View;
+namespace Leno;
 
 class View 
 {
@@ -18,7 +18,7 @@ class View
      * View::$dir = [];
      */
     protected static $dir = [
-        __DIR__ . '/View',
+        __DIR__ . '/Template',
     ];
 
     /**
@@ -30,6 +30,8 @@ class View
             'keywords' => 'leno,hackyoung,view',
             'description' => 'a simple framework component',
             'author' => 'hackyoung@163.com',
+            'js' => [],
+            'css' => [],
         ]
     ];
 
@@ -78,6 +80,12 @@ class View
     public function __construct($view, $data=[]) 
     {
         $this->file = $this->setFile($view);
+        if(isset($data['__head__'])) {
+            $head = array_merge($this->__head__, $data['__head__']);
+        } else {
+            $head = $this->__head__;
+        }
+        $data['__head__'] = $head;
         $this->data = array_merge($data);
         $this->template = self::newTemplate($this);
     }
@@ -157,7 +165,7 @@ class View
         }
         $content = ob_get_contents();
         ob_end_clean();
-        $this->setFragment($name, new Fragment($content));
+        $this->setFragment($name, new \Leno\View\Fragment($content));
     }
 
     /**
@@ -256,6 +264,26 @@ class View
         throw new \InvalidArgumentException(
             sprintf("%s is not exists", $file)
         );
+    }
+
+    public function addJs($js) {
+        if(is_array($js)) {
+            $this->data['__head__']['js'] = array_merge(
+                $this->__head__['js'], $js
+            );
+        } else {
+            $this->data['__head__']['js'][] = $js;
+        }
+    }
+
+    public function addCss($css) {
+        if(is_array($css)) {
+            $this->data['__head__']['css'] = array_merge(
+                $this->__head__['css'], $css
+            );
+        } else {
+            $this->data['__head__']['css'][] = $js;
+        }
     }
 
     public static function setTemplateClass($templateClass)
