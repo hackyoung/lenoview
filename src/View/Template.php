@@ -8,7 +8,6 @@ namespace Leno\View;
  */
 class Template 
 {
-
     /**
      * 编译之后的文件后缀
      */

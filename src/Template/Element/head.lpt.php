@@ -6,7 +6,7 @@
     <meta name='author' content="{$author}" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <llist name="js" id="j">
-        <script src="{$j}" type="javascript"></script>
+        <script src="{$j}" type="text/javascript"></script>
     </llist>
     <llist name="css" id="c">
         <link href="{$c}" rel="stylesheet" type="text/css" />
