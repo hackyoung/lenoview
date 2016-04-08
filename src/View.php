@@ -61,6 +61,8 @@ class View
      */
     private $temp_name;
 
+    private $theme = 'default';
+
     /**
      * 构造函数
      * @param string $view 基于查找路径的view文件
@@ -68,7 +70,7 @@ class View
      */
     public function __construct($view, $data=[]) 
     {
-        $this->file = $this->setFile($view);
+        $this->file = $view;
         $this->data = $data;
         $this->template = self::newTemplate($this);
     }
@@ -117,29 +119,6 @@ class View
         return $this->fragments[$name];
     }
 
-    /**
-     * 在模板文件中使用，标记从该方法之后的内容为一个fragment的内容
-     * @param string $name fragment的名字
-     */
-    protected function startFragment($name) 
-    {
-        $this->temp_name = $name;
-        ob_start();
-    }
-
-    /**
-     * 在模板文件中使用，标记一个fragment内容结束的地方
-     */
-    protected function endFragment() 
-    {
-        $name = $this->temp_name;
-        if(empty($name)) {
-            return;
-        }
-        $content = ob_get_contents();
-        ob_end_clean();
-        $this->setFragment($name, new Fragment($content));
-    }
 
     /**
      * 显示一个view
@@ -162,13 +141,6 @@ class View
         $this->data[$var] = $value;
     }
 
-    /**
-     * 获得该View的模板文件的绝对路径
-     */
-    public function getFile() 
-    {
-        return $this->file;
-    }
 
     /**
      * 获得一个组合的子View
@@ -216,6 +188,10 @@ class View
         }
     }
 
+    public function setTheme($theme) {
+        $this->theme = $theme;
+    }
+
     /**
      * 判断当前view是否和所传view相等
      * @param View $view 待比较的view对象
@@ -225,18 +201,17 @@ class View
         return ($this->getFile() === $view->getFile());
     }
 
-    protected function setFile($view) 
+    /**
+     * 获得该View的模板文件的绝对路径
+     */
+    public function getFile() 
     {
-        $last = str_replace(".", "/", $view) . self::SUFFIX;
-        foreach(self::$dir as $dir) {
-            $file = preg_replace('/\/$/', '', $dir) . '/' . $last;
-            if(is_file($file)) {
-                return $file;
-            }
+        $view = $this->theme .'.'. $this->file;
+        try {
+            return $this->searchFile($view);
+        } catch(\Exception $e) {
+            return $this->searchFile($this->file);
         }
-        throw new \InvalidArgumentException(
-            sprintf("%s is not exists", $file)
-        );
     }
 
     public static function setTemplateClass($templateClass)
@@ -271,5 +246,43 @@ class View
     {
         $keys = array_keys(self::$dir, $dir);
         array_splice(self::$dir, $keys[0], 1);
+    }
+
+    /**
+     * 在模板文件中使用，标记从该方法之后的内容为一个fragment的内容
+     * @param string $name fragment的名字
+     */
+    protected function startFragment($name) 
+    {
+        $this->temp_name = $name;
+        ob_start();
+    }
+
+    /**
+     * 在模板文件中使用，标记一个fragment内容结束的地方
+     */
+    protected function endFragment() 
+    {
+        $name = $this->temp_name;
+        if(empty($name)) {
+            return;
+        }
+        $content = ob_get_contents();
+        ob_end_clean();
+        $this->setFragment($name, new Fragment($content));
+    }
+
+    protected function searchFile($view)
+    {
+        $last = str_replace(".", "/", $view) . self::SUFFIX;
+        foreach(self::$dir as $dir) {
+            $file = preg_replace('/\/$/', '', $dir) . '/' . $last;
+            if(is_file($file)) {
+                return $file;
+            }
+        }
+        throw new \InvalidArgumentException(
+            sprintf("%s is not exists", $file)
+        );
     }
 }
