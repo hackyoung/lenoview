@@ -313,7 +313,7 @@ class View
         }
         $content = ob_get_contents();
         ob_end_clean();
-        $this->setFragment($name, new Fragment($content));
+        $this->setFragment($name, new \Leno\View\Fragment($content));
     }
 
     protected function searchFile($view)
