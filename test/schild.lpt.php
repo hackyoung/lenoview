@@ -1,5 +1,5 @@
-<extend name="child">
-	<fragment name="child2">
+<extend name="Layout.default">
+	<fragment name="body">
 		这是schild提供的
 		<div>{$div}</div>
         <eq name="hello" value="world" const="true">

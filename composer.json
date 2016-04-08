@@ -3,7 +3,7 @@
     "version": "0.1.1",
     "autoload": {
         "psr-4": {
-            "Leno\\View\\": "src/"
+            "Leno\\": "src/"
         }
     }
 }

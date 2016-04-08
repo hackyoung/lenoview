@@ -11,7 +11,7 @@ class View extends \Leno\View\Token
         $data = $this->attrValue('data', $line);
         $extend_data = $this->attrValue('extend_data', $line);
 
-        $ret = '<?php $this->view("v", new \Leno\View\View("'.$name.'"';
+        $ret = '<?php $this->view("v", new \Leno\View("'.$name.'"';
         if(!empty($data)) {
             $ret .= ', '.$this->varString($data);
         }

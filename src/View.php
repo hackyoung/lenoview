@@ -1,5 +1,5 @@
 <?php
-namespace Leno\View;
+namespace Leno;
 
 class View 
 {
@@ -10,11 +10,6 @@ class View
     const SUFFIX = '.lpt.php';
 
     /**
-     * @var array data View对象可以使用的数据,通过View::set方法来设置它
-     */
-    public $data = [];
-
-    /**
      * @var view 的查找路径, 通过View::addViewDir(); 
      * View::deleteViewDir()两个方法来配置View的搜索路径,
      * View::addViewDir('test');
@@ -22,7 +17,23 @@ class View
      * View::deleteViewDir('test');
      * View::$dir = [];
      */
-    protected static $dir = [];
+    protected static $dir = [
+        __DIR__ . '/Template',
+    ];
+
+    /**
+     * @var array data View对象可以使用的数据,通过View::set方法来设置它
+     */
+    public $data = [
+        '__head__' => [
+            'title' => '',
+            'keywords' => 'leno,hackyoung,view',
+            'description' => 'a simple framework component',
+            'author' => 'hackyoung@163.com',
+            'js' => [],
+            'css' => [],
+        ]
+    ];
 
     protected static $templateClass = '\Leno\View\Template';
 
@@ -71,12 +82,28 @@ class View
     public function __construct($view, $data=[]) 
     {
         $this->file = $view;
-        $this->data = $data;
+        if(isset($data['__head__'])) {
+            $head = array_merge($this->__head__, $data['__head__']);
+        } else {
+            $head = $this->__head__;
+        }
+        $data['__head__'] = $head;
+        $this->data = array_merge($data);
         $this->template = self::newTemplate($this);
     }
 
     public function __toString() {
         return $this->display();
+    }
+
+    public function __get($key)
+    {
+        return $this->data[$key];
+    }
+
+    public function __set($key, $val)
+    {
+        $this->set($key, $val);
     }
 
     /**
@@ -118,7 +145,6 @@ class View
         }
         return $this->fragments[$name];
     }
-
 
     /**
      * 显示一个view
@@ -214,6 +240,26 @@ class View
         }
     }
 
+    public function addJs($js) {
+        if(is_array($js)) {
+            $this->data['__head__']['js'] = array_merge(
+                $this->__head__['js'], $js
+            );
+        } else {
+            $this->data['__head__']['js'][] = $js;
+        }
+    }
+
+    public function addCss($css) {
+        if(is_array($css)) {
+            $this->data['__head__']['css'] = array_merge(
+                $this->__head__['css'], $css
+            );
+        } else {
+            $this->data['__head__']['css'][] = $js;
+        }
+    }
+
     public static function setTemplateClass($templateClass)
     {
         self::$templateClass = $templateClass;
@@ -232,14 +278,12 @@ class View
     public static function addViewDir($dir) 
     {
         if(!is_dir($dir)) {
-            throw new \InvalidArgumentException(
-                sprintf("%s is not a directory", $dir)
-            );
+            return;
         }
         if(in_array($dir, self::$dir)) {
             return;
         }
-        self::$dir[] = $dir;
+        array_unshift(self::$dir, $dir);
     }
 
     public static function deleteViewDir($dir) 
