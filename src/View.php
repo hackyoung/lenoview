@@ -3,7 +3,6 @@ namespace Leno;
 
 class View 
 {
-
     /**
      * @var view 文件的后缀名
      */
