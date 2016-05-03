@@ -106,6 +106,22 @@ class View
         $this->set($key, $val);
     }
 
+	public function __call($method, $parameters=null)
+	{
+		$series = explode('_', unCamelCase($method));
+		if(empty($series[0])) {
+			throw new \Exception('Controller::'.$method.' Not Defined');
+		}
+		switch($series[0]) {
+			case 'set':
+				array_splice($series, 0, 1);
+				$key = implode('_', $series);
+				return $this->set($key, $parameters[0]);
+				break;
+		}
+		throw new \Leno\Exception('Controller::'.$method.' Not Defined');
+	}
+
     /**
      * 设置view对象的fragment
      * @param string $name 索引的名字
