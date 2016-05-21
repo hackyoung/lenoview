@@ -5,16 +5,10 @@ class Eq extends \Leno\View\Token
 {
     protected $reg = '/\<eq.*\>/U';
 
-    public function result($line)
+    protected function replaceMatched($matched) : string
     {
-        $name = $this->attrValue('name', $line);
-        $value = $this->attrValue('value', $line);
-        $const = $this->attrValue('const', $line);
-        if($const == 'true') {
-            $value = '\''.$value.'\'';
-        } else {
-            $value = $this->varString($value);
-        }
-        return $this->condition($this->varString($name) .'=='. $value);
+        $name = $this->attrValue('name', $matched);
+        $value = $this->attrValue('value', $matched);
+        return $this->condition($this->right($name) .'=='. $this->right($value));
     }
 }

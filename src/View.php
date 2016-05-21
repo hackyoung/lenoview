@@ -108,7 +108,7 @@ class View
 
 	public function __call($method, $parameters=null)
 	{
-		$series = explode('_', unCamelCase($method));
+		$series = explode('_', \unCamelCase($method));
 		if(empty($series[0])) {
 			throw new \Exception('Controller::'.$method.' Not Defined');
 		}
@@ -173,6 +173,10 @@ class View
         return include $this->template->display();
     }
 
+    public function render()
+    {
+        return $this->display();
+    }
     /**
      * 设置一个变量，在模板中使用
      * @param string $var 在模板中使用的变量名

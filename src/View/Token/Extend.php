@@ -5,9 +5,10 @@ class Extend extends \Leno\View\Token
 {
     protected $reg = '/\<extend.*\>/U';
 
-    public function result($line)
+    protected function replaceMatched($matched) : string
     {
-        $name = $this->attrValue('name', $line);
-        return '<?php $this->extend(\''.$name.'\'); ?>'."\n";
+    
+        $name = $this->attrValue('name', $matched);
+        return '<?php $this->extend(\''.$name.'\'); ?>';
     }
 }

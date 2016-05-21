@@ -3,13 +3,11 @@ namespace Leno\View\Token;
 
 class Func extends \Leno\View\Token
 {
-    protected $reg = '/\.*\{\|.*\}.*/';
+    protected $reg = '/\{\:.*\}/';
 
-    public function result($line)
+    protected function replaceMatched($matched) : string
     {
-        preg_match('/\{\|.*\}/U', $line, $attrarr);
-        $var = preg_replace('/[\{\}\|]/', '', $attrarr[0]);
-        $v = '<?php echo '.$var.'; ?>';
-        return preg_replace('/\{\|.*\}/U', $v, $line);
+        var_dump($matched);
+        return 'echo '.$this->funcString(preg_replace('/\{|\}|\:/', '', $matched)) . ';';
     }
 }

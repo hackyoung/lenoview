@@ -5,8 +5,8 @@ class ExtendEnd extends \Leno\View\Token
 {
     protected $reg = '/\<\/extend.*\>/U';
 
-    public function result($line)
+    protected function replaceMatched($matched) : string
     {
-		return '<?php $this->parent->display(); ?>'."\n";
+		return '<?php $this->parent->display(); ?>';
     }
 }

@@ -5,10 +5,10 @@ class NotEmpty extends \Leno\View\Token
 {
     protected $reg = '/\<notempty.*\>/U';
 
-    public function result($line)
+    protected function replaceMatched($matched) : string
     {
-        $var = $this->attrValue('name', $line);
-        $tmp = '<?php if(!empty(%s)) { ?>'."\n";
-        return sprintf($tmp, $this->varString($var));
+        $name = $this->attrValue('name', $matched);
+        $var = $this->right($name);
+        return $this->condition('!empty('.$var.')');
     }
 }

@@ -5,9 +5,9 @@ class StartFragment extends \Leno\View\Token
 {
     protected $reg ='/\<fragment.*?\>/U';
 
-    public function result($line)
+    protected function replaceMatched($matched) : string
     {
-        $name = $this->attrValue('name', $line);
-        return '<?php $this->startFragment(\''.$name.'\'); ?>'."\n";
+        $name = $this->attrValue('name', $matched);
+        return '<?php $this->startFragment(\''.$name.'\'); ?>';
     }
 }

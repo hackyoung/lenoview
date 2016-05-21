@@ -1,0 +1,24 @@
+<?php $this->extend('hello_world'); ?>
+    <?php $this->getFragment('hello')->display(); ?>
+    <?php $this->startFragment('hello'); ?>
+        <?php if(!empty($hello->world($hello,$world))) { ?>
+        <?php } ?>
+        <?php if(empty($hello->world($hello,$world))) { ?>
+            <?php echo $hello["world"]; ?>
+            echo $hello->world($hello);
+            <?php foreach($hello["hello"] as $hello) { ?>
+            <?php } ?>
+        <?php } ?>
+        <?php if(in_array($hello, $world)) { ?>
+        <?php } ?>
+        <?php if(!in_array('hello', $world->w())) { ?>
+        <?php } ?>
+        <?php if($hello!=$world) { ?>
+        <?php } ?>
+        <?php if($hello->h()==$world) { ?>
+        <?php } ?>
+        <?php $this->view('v', new \Leno\View('hello', $hello["world"]), true); $this->e("v")->display(); ?>
+    <?php $this->endFragment(); ?>
+    <?php $this->startFragment('world'); ?>
+    <?php $this->endFragment(); ?>
+<?php $this->parent->display(); ?>

@@ -1,25 +1,24 @@
-<extend name="Layout.default">
-	<fragment name="body">
-		这是schild提供的
-		<div>{$div}</div>
-        <eq name="hello" value="world" const="true">
-            hello world
-        </eq>
-        <ul>
-            <llist name="hello" id="h">
-                <in name="$h" value="hello">
-                    in
-                </in>
-                <nin name="$h" value="hello">
-                       hhh
-                </nin>
-                <eq name="h" value="3" const="true">
-                    <li>三</li>
-                </eq>
-                <neq name="h" value="3" const="true">
-                    <li>{$h}</li>
-                </neq>
+<extend name="hello_world">
+    <fragment name="hello" />
+    <fragment name="hello">
+        <notempty name=":hello.world($hello, $world)">
+        </notempty>
+        <empty name=":hello.world($hello, $world)">
+            {$hello.world}
+            {:hello.world($hello)}
+            <llist id="hello" name="$hello.hello">
             </llist>
-        </ul>
-	</fragment>
+        </empty>
+        <in name="$hello" value="$world">
+        </in>
+        <nin name="hello" value=":world.w()">
+        </nin>
+        <neq name="$hello" value="$world">
+        </neq>
+        <eq name=":hello.h()" value="$world">
+        </eq>
+        <view name="hello" data="$hello.world" extend_data='true' />
+    </fragment>
+    <fragment name="world" value="">
+    </fragment>
 </extend>
