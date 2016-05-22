@@ -6,7 +6,7 @@
         <?php if(empty($hello->world($hello,$world))) { ?>
             <?php echo $hello["world"]; ?>
             echo $hello->world($hello);
-            <?php foreach($hello["hello"] as $hello) { ?>
+            <?php $hello["hello"] = $hello["hello"] ?? []; foreach($hello["hello"] as $hello) { ?>
             <?php } ?>
         <?php } ?>
         <?php if(in_array($hello, $world)) { ?>

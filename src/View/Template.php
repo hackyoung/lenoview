@@ -11,7 +11,7 @@ class Template
     /**
      * 编译之后的文件后缀
      */
-    const SUFFIX = '.view';
+    const SUFFIX = '.view.php';
 
     private static $cachedir;
 
@@ -54,9 +54,9 @@ class Template
     public function display() 
     {
         if(!is_file($this->cachefile) || filemtime($this->cachefile) <= filemtime($this->view->getFile())) {
-            $cachefile = $this->compile();
+            $this->compile();
         }
-        return $cachefile;
+        return $this->cachefile;
     }
 
     private function getContent()

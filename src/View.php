@@ -18,7 +18,7 @@ class View
      * View::$dir = [];
      */
     protected static $dir = [
-        __DIR__ . '/Template',
+        __DIR__ . '/template',
     ];
 
     /**
@@ -136,6 +136,7 @@ class View
         if($this->parent instanceof self) {
             $this->parent->setFragment($name, $fragment);
         }
+        return $this;
     }
 
     /**
