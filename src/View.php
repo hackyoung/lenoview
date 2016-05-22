@@ -88,7 +88,7 @@ class View
             $head = $this->__head__;
         }
         $data['__head__'] = $head;
-        $this->data = array_merge($data);
+        $this->data = array_merge($this->data, $data);
         $this->template = self::newTemplate($this);
     }
 
