@@ -1,6 +1,9 @@
 <?php
 namespace Leno;
 
+use \Leno\View\Fragment;
+use \Leno\View\Template;
+
 class View 
 {
 
@@ -8,6 +11,12 @@ class View
      * @var view 文件的后缀名
      */
     const SUFFIX = '.lpt.php';
+
+    const TYPE_REPLACE = 'replace';
+
+    const TYPE_BEFORE = 'before';
+
+    const TYPE_AFTER  = 'after';
 
     /**
      * @var view 的查找路径, 通过View::addViewDir(); 
@@ -72,6 +81,14 @@ class View
      */
     private $temp_name;
 
+    /**
+     * @var string temp_type start/endFragment的时候用
+     */
+    private $temp_type = self::TYPE_REPLACE;
+
+    /**
+     * @var 主题
+     */
     private $theme = 'default';
 
     /**
@@ -93,17 +110,22 @@ class View
     }
 
     public function __toString() {
-        return $this->display();
+        ob_start();
+        $this->render();
+        $content = ob_get_contents();
+        ob_end_clean();
+        return $content;
     }
 
     public function __get($key)
     {
-        return $this->data[$key];
+        return $this->data[$key] ?? null;
     }
 
     public function __set($key, $val)
     {
         $this->set($key, $val);
+        return $this;
     }
 
 	public function __call($method, $parameters=null)
@@ -122,22 +144,6 @@ class View
 		throw new \Leno\Exception('Controller::'.$method.' Not Defined');
 	}
 
-    /**
-     * 设置view对象的fragment
-     * @param string $name 索引的名字
-     * @param Fragment $fragment 一个fragment对象
-     */
-    public function setFragment($name, $fragment) 
-    {
-        if($this->child instanceof self && $this->child->hasFragment($name)) {
-            $fragment = $this->child->getFragment($name);
-        }
-        $this->fragments[$name] = $fragment;
-        if($this->parent instanceof self) {
-            $this->parent->setFragment($name, $fragment);
-        }
-        return $this;
-    }
 
     /**
      * 判断该view是否有名为name的fragment
@@ -213,6 +219,7 @@ class View
             }
         }
         $this->view[$idx] = $view;
+        return $view;
     }
 
     /**
@@ -233,10 +240,12 @@ class View
         if($child->parent->equal($this)) {
             $this->child = $child;
         }
+        return $this;
     }
 
     public function setTheme($theme) {
         $this->theme = $theme;
+        return $this;
     }
 
     /**
@@ -317,16 +326,17 @@ class View
      * 在模板文件中使用，标记从该方法之后的内容为一个fragment的内容
      * @param string $name fragment的名字
      */
-    protected function startFragment($name) 
+    protected function startFragment($name, $type = self::TYPE_REPLACE) 
     {
         $this->temp_name = $name;
+        $this->temp_type = $type;
         ob_start();
     }
 
     /**
      * 在模板文件中使用，标记一个fragment内容结束的地方
      */
-    protected function endFragment() 
+    protected function endFragment()
     {
         $name = $this->temp_name;
         if(empty($name)) {
@@ -334,7 +344,17 @@ class View
         }
         $content = ob_get_contents();
         ob_end_clean();
-        $this->setFragment($name, new \Leno\View\Fragment($content));
+        $fragment = new Fragment($content);
+        if($this->child && $this->child->hasFragment($name)) {
+            $fragment->setChild($this->child->getFragment($name));
+        }
+        $this->fragments[$name] = [
+            'type' => $this->temp_type,
+            'fragment' => $fragment
+        ];
+        if(!$this->parent instanceof self) {
+            $fragment->display();
+        }
     }
 
     protected function searchFile($view)

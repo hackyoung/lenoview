@@ -8,6 +8,10 @@ class StartFragment extends \Leno\View\Token
     protected function replaceMatched($matched) : string
     {
         $name = $this->attrValue('name', $matched);
-        return '<?php $this->startFragment(\''.$name.'\'); ?>';
+        $type = $this->attrValue('type', $matched);
+        if(empty($type)) {
+            $type = \Leno\View::TYPE_REPLACE;
+        }
+        return '<?php $this->startFragment(\''.$name.'\', \''.$type.'\'); ?>';
     }
 }

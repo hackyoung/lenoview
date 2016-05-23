@@ -19,8 +19,7 @@ class View extends \Leno\View\Token
         if($extend_data == 'true') {
             $ret .= ', true';
         }
-        $ret .= '); ';
-        $ret .= '$this->e("v")->display(); ?>';
+        $ret .= ')->display(); ?>';
         return $ret;
     }
 }
