@@ -18,7 +18,7 @@ class View
     const TYPE_AFTER  = 'after';
 
     /**
-     *  view 的查找路径, 通过View::addViewDir(); 
+     * view 的查找路径, 通过View::addViewDir(); 
      * View::deleteViewDir()两个方法来配置View的搜索路径,
      * View::addViewDir('test');
      * View::$dir = ['test'];
@@ -30,7 +30,7 @@ class View
     ];
 
     /**
-     *  array data View对象可以使用的数据,通过View::set方法来设置它
+     * array data View对象可以使用的数据,通过View::set方法来设置它
      */
     public $data = [
         '__head__' => [
@@ -46,22 +46,22 @@ class View
     protected static $templateClass = '\Leno\View\Template';
 
     /**
-     *  Template template 处理该模板文件的Template对象
+     * Template template 处理该模板文件的Template对象
      */
     protected $template;
 
     /**
-     *  array view 组合的View
+     * array view 组合的View
      */
     protected $view = [];
 
     /**
-     *  View parent 该View的父亲View
+     * View parent 该View的父亲View
      */
     protected $parent;
 
     /**
-     *  View child 继承该View的View对象
+     * View child 继承该View的View对象
      */
     protected $child;
 
@@ -71,22 +71,22 @@ class View
     protected $fragments = [];
 
     /**
-     *  string file View对象的模板文件的绝对路径文件
+     * string file View对象的模板文件的绝对路径文件
      */
     private $file;
 
     /**
-     *  string temp_name start/endFragment的时候用
+     * string temp_name start/endFragment的时候用
      */
     private $temp_name;
 
     /**
-     *  string temp_type start/endFragment的时候用
+     * string temp_type start/endFragment的时候用
      */
     private $temp_type = self::TYPE_REPLACE;
 
     /**
-     *  主题
+     * 主题
      */
     private $theme = 'default';
 
