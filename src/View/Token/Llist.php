@@ -5,19 +5,12 @@ class Llist extends \Leno\View\Token
 {
     protected $reg = '/\<llist.*\>/U';
 
-    public function result($line)
+    protected function replaceMatched($matched) : string
     {
-        $name = $this->attrValue('name', $line);
-        $id = $this->attrValue('id', $line);
-        $varName = $this->varString($name);
-        $ret = '<?php if(gettype(';
-        $ret .= $varName;
-        $ret .= ') !== "array") { ';
-        $ret .= $varName . ' = []; } ?>'."\n";
-        $ret .= '<?php foreach(';
-        $ret .= $varName;
-        $ret .=' as '.$this->varString($id);
-        $ret .=') { ?>'."\n";
-        return $ret;
+        $name = $this->attrValue('name', $matched);
+        $id = $this->attrValue('id', $matched);
+        $var = $this->right($name);
+        $ret = '<?php %s = %s ?? []; foreach(%s as %s) { ?>';
+        return sprintf($ret, $var, $var, $var, $this->varString($id));
     }
 }

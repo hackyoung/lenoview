@@ -11,7 +11,7 @@ class Template
     /**
      * 编译之后的文件后缀
      */
-    const SUFFIX = '.cache.php';
+    const SUFFIX = '.view.php';
 
     private static $cachedir;
 
@@ -19,89 +19,65 @@ class Template
 
     protected $view;
 
-    protected $tokens = [];
-
-    protected $tokenClasses = [
-        'extend' => '\Leno\View\Token\Extend',
-        'extendend' => '\Leno\View\Token\ExtendEnd',
-        'getfragment' => '\Leno\View\Token\Fragment',
-        'startfragment'=> '\Leno\View\Token\StartFragment',
-        'endfragment' => '\Leno\View\Token\EndFragment',
-        'llist' => '\Leno\View\Token\Llist',
-        'llistend'=> '\Leno\View\Token\LlistEnd',
-        'var' => '\Leno\View\Token\VarToken',
-        'func' => '\Leno\View\Token\Func',
-        'eq' => '\Leno\View\Token\Eq',
-        'neq' => '\Leno\View\Token\Neq',
-        'view' => '\Leno\View\Token\View',
-        'in' => '\Leno\View\Token\In',
-        'nin' => '\Leno\View\Token\Nin',
-        'empty' => '\Leno\View\Token\EmptyToken',
-        'notempty' => '\Leno\View\Token\NotEmpty',
-        'inend' => '\Leno\View\Token\InEnd',
-        'ninend' => '\Leno\View\Token\NinEnd',
-        'eqend' => '\Leno\View\Token\EqEnd',
-        'neqend' => '\Leno\View\Token\NeqEnd',
-        'emptyend' => '\Leno\View\Token\EmptyEnd',
-        'notemtyend' => '\Leno\View\Token\NotEmptyEnd',
-    ]; 
+    protected $node_token_class = [
+        '\Leno\View\Token\Extend',
+        '\Leno\View\Token\ExtendEnd',
+        '\Leno\View\Token\Fragment',
+        '\Leno\View\Token\StartFragment',
+        '\Leno\View\Token\EndFragment',
+        '\Leno\View\Token\EmptyToken',
+        '\Leno\View\Token\EmptyEnd',
+        '\Leno\View\Token\VarToken',
+        '\Leno\View\Token\Func',
+        '\Leno\View\Token\Llist',
+        '\Leno\View\Token\LlistEnd',
+        '\Leno\View\Token\In',
+        '\Leno\View\Token\InEnd',
+        '\Leno\View\Token\Eq',
+        '\Leno\View\Token\EqEnd',
+        '\Leno\View\Token\View',
+        '\Leno\View\Token\Neq',
+        '\Leno\View\Token\NeqEnd',
+        '\Leno\View\Token\Nin',
+        '\Leno\View\Token\NinEnd',
+        '\Leno\View\Token\NotEmpty',
+        '\Leno\View\Token\NotEmptyEnd',
+    ];
 
     public function __construct($view) 
     {
         $this->view = $view;
-        $file = $view->getFile();
-        $this->cachefile = self::$cachedir . '/' .md5($this->view->getFile()) . self::SUFFIX;
-        foreach($this->tokenClasses as $k=>$c) {
-            $this->tokens[$k] = new $c;
-        }
-    }
-
-    public function pass1() 
-    {
-        $file = $this->view->getFile();
-        $content = file_get_contents($file);
-        $this->cache($content);
-    }
-
-    public function dispatch($line) 
-    {
-        foreach($this->tokens as $stat=>$token) {
-            if(preg_match($token->getRegExp(), $line)) {
-                $this->stat = $stat;
-                return $token->result($line);
-            }
-        }
-        return $line;
-    }
-
-    public function pass2() 
-    {
-        $file = $this->cachefile;
-        $fp = fopen($file, 'r');
-        $content = '';
-        while($line = fgets($fp)) {
-            $this->state = false;
-            $content .= $this->dispatch($line);
-        }
-        fclose($fp);
-        $this->cache($content);
-    }
-
-    public function cache($content) 
-    {
-        $file = $this->cachefile;
-        file_put_contents($file, $content);
+        $file = str_replace('/', '_', $view->getFile());
+        $this->cachefile = self::$cachedir . '/' . $file . self::SUFFIX;
     }
 
     public function display() 
     {
-        $viewfile = $this->view->getFile();
-        $cache = $this->cachefile;
-        if(!is_file($cache) || filemtime($cache) <= filemtime($viewfile)) {
-            $content = $this->pass1();
-            $content = $this->pass2();
+//        if(!is_file($this->cachefile) || filemtime($this->cachefile) <= filemtime($this->view->getFile())) {
+            $this->compile();
+ //       }
+        return $this->cachefile;
+    }
+
+    private function getContent()
+    {
+        return file_get_contents($this->view->getFile());
+    }
+
+    private function cacheContent($content)
+    {
+        file_put_contents($this->cachefile, $content);
+    }
+
+    protected function compile()
+    {
+        $content = $this->getContent();
+        foreach($this->node_token_class as $class) {
+            $node_token = new $class($content);
+            $content = $node_token->replace();
         }
-        return $cache;
+        $this->cacheContent($content);
+        return $this->cachefile;
     }
 
     public static function setCacheDir($dir) 

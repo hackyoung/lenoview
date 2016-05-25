@@ -5,9 +5,9 @@ class Fragment extends \Leno\View\Token
 {
     protected $reg = '/\<fragment.*?\/\>/U';
 
-    public function result($line)
+    protected function replaceMatched($matched) : string
     {
-        $name = $this->attrValue('name', $line);
-        return '<?php $this->getFragment(\''.$name.'\')->display(); ?>'."\n";
+        $name = $this->attrValue('name', $matched);
+        return '<?php $this->getFragment(\''.$name.'\')->display(); ?>';
     }
 }

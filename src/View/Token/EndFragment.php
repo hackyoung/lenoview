@@ -5,8 +5,8 @@ class EndFragment extends \Leno\View\Token
 {
     protected $reg = '/\<\/fragment.*\>/U';
 
-    public function result($line)
+    public function replaceMatched($matched) : string
     {
-        return '<?php $this->endFragment(); ?>' . "\n";
+        return '<?php $this->endFragment(); ?>';
     }
 }

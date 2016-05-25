@@ -5,22 +5,21 @@ class View extends \Leno\View\Token
 {
     protected $reg = '/\<view.*\>/';
 
-    public function result($line)
+    protected function replaceMatched($matched) : string
     {
-        $name = $this->attrValue('name', $line);
-        $data = $this->attrValue('data', $line);
-        $extend_data = $this->attrValue('extend_data', $line);
+        $name = $this->attrValue('name', $matched);
+        $data = $this->attrValue('data', $matched);
+        $extend_data = $this->attrValue('extend_data', $matched);
 
-        $ret = '<?php $this->view("v", new \Leno\View("'.$name.'"';
+        $ret = '<?php $this->view(\'v\', new \Leno\View(\''.$name.'\'';
         if(!empty($data)) {
-            $ret .= ', '.$this->varString($data);
+            $ret .= ', '.$this->right($data);
         }
         $ret .= ')';
         if($extend_data == 'true') {
             $ret .= ', true';
         }
-        $ret .= ') ?>'."\n";
-        $ret .= '<?php $this->e("v")->display(); ?>'."\n";
+        $ret .= ')->display(); ?>';
         return $ret;
     }
 }

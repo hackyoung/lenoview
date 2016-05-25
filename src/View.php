@@ -1,12 +1,21 @@
 <?php
 namespace Leno;
 
+use \Leno\View\Fragment;
+use \Leno\View\Template;
+
 class View 
 {
     /**
      * @var view 文件的后缀名
      */
     const SUFFIX = '.lpt.php';
+
+    const TYPE_REPLACE = 'replace';
+
+    const TYPE_BEFORE = 'before';
+
+    const TYPE_AFTER  = 'after';
 
     /**
      * @var view 的查找路径, 通过View::addViewDir(); 
@@ -17,7 +26,7 @@ class View
      * View::$dir = [];
      */
     protected static $dir = [
-        __DIR__ . '/Template',
+        __DIR__ . '/template',
     ];
 
     /**
@@ -71,6 +80,14 @@ class View
      */
     private $temp_name;
 
+    /**
+     * @var string temp_type start/endFragment的时候用
+     */
+    private $temp_type = self::TYPE_REPLACE;
+
+    /**
+     * @var 主题
+     */
     private $theme = 'default';
 
     /**
@@ -87,39 +104,45 @@ class View
             $head = $this->__head__;
         }
         $data['__head__'] = $head;
-        $this->data = array_merge($data);
+        $this->data = array_merge($this->data, $data);
         $this->template = self::newTemplate($this);
     }
 
     public function __toString() {
-        return $this->display();
+        ob_start();
+        $this->render();
+        $content = ob_get_contents();
+        ob_end_clean();
+        return $content;
     }
 
     public function __get($key)
     {
-        return $this->data[$key];
+        return $this->data[$key] ?? null;
     }
 
     public function __set($key, $val)
     {
         $this->set($key, $val);
+        return $this;
     }
 
-    /**
-     * 设置view对象的fragment
-     * @param string $name 索引的名字
-     * @param Fragment $fragment 一个fragment对象
-     */
-    public function setFragment($name, $fragment) 
-    {
-        if($this->child instanceof self && $this->child->hasFragment($name)) {
-            $fragment = $this->child->getFragment($name);
-        }
-        $this->fragments[$name] = $fragment;
-        if($this->parent instanceof self) {
-            $this->parent->setFragment($name, $fragment);
-        }
-    }
+	public function __call($method, $parameters=null)
+	{
+		$series = explode('_', \unCamelCase($method));
+		if(empty($series[0])) {
+			throw new \Exception('Controller::'.$method.' Not Defined');
+		}
+		switch($series[0]) {
+			case 'set':
+				array_splice($series, 0, 1);
+				$key = implode('_', $series);
+				return $this->set($key, $parameters[0]);
+				break;
+		}
+		throw new \Leno\Exception('Controller::'.$method.' Not Defined');
+	}
+
 
     /**
      * 判断该view是否有名为name的fragment
@@ -156,6 +179,10 @@ class View
         return include $this->template->display();
     }
 
+    public function render()
+    {
+        return $this->display();
+    }
     /**
      * 设置一个变量，在模板中使用
      * @param string $var 在模板中使用的变量名
@@ -191,6 +218,7 @@ class View
             }
         }
         $this->view[$idx] = $view;
+        return $view;
     }
 
     /**
@@ -211,10 +239,12 @@ class View
         if($child->parent->equal($this)) {
             $this->child = $child;
         }
+        return $this;
     }
 
     public function setTheme($theme) {
         $this->theme = $theme;
+        return $this;
     }
 
     /**
@@ -295,16 +325,17 @@ class View
      * 在模板文件中使用，标记从该方法之后的内容为一个fragment的内容
      * @param string $name fragment的名字
      */
-    protected function startFragment($name) 
+    protected function startFragment($name, $type = self::TYPE_REPLACE) 
     {
         $this->temp_name = $name;
+        $this->temp_type = $type;
         ob_start();
     }
 
     /**
      * 在模板文件中使用，标记一个fragment内容结束的地方
      */
-    protected function endFragment() 
+    protected function endFragment()
     {
         $name = $this->temp_name;
         if(empty($name)) {
@@ -312,7 +343,17 @@ class View
         }
         $content = ob_get_contents();
         ob_end_clean();
-        $this->setFragment($name, new \Leno\View\Fragment($content));
+        $fragment = new Fragment($content);
+        if($this->child && $this->child->hasFragment($name)) {
+            $fragment->setChild($this->child->getFragment($name));
+        }
+        $this->fragments[$name] = [
+            'type' => $this->temp_type,
+            'fragment' => $fragment
+        ];
+        if(!$this->parent instanceof self) {
+            $fragment->display();
+        }
     }
 
     protected function searchFile($view)

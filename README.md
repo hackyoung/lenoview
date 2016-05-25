@@ -9,12 +9,12 @@ lenoview 是一个支持继承，组合，分支逻辑，条件判断的简单�
 我们假设其项目根目录为web,所有的View文件放在web/view,编译之后的模板文件放在web/tmp,首先我们需要编写简单的代码来设置View
 test.php
 ```php
-use \Leno\View\View;
+use \Leno\View;
 
-View::addViewDir(web/view);
+View::addViewDir('web/view');
 
 $template = View::getTemplateClass();
-$template::setCacheDir(web/tmp);
+$template::setCacheDir('web/tmp');
 
 $view = new View('child');
 $view->display();

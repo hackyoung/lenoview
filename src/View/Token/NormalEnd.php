@@ -5,7 +5,7 @@ abstract class NormalEnd extends \Leno\View\Token
 {
     protected $reg;
 
-    public function result($line) 
+    protected function replaceMatched($matched) : string 
     {
         return $this->normalEnd();
     }
