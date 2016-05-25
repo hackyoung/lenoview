@@ -5,6 +5,12 @@ class Fragment
 {
     private $content;
 
+    /**
+     * struct  [
+     *      'type' => , \Leno\View::TYPE_REPLACE | \Leno\View::TYPE_AFTER | \Leno\View::TYPE_BEFORE
+     *      'fragment' => \Leno\View\Fragment
+     * ];
+     */
     private $child;
 
     public function __construct($content)  
@@ -23,6 +29,9 @@ class Fragment
         echo $this->getContent();
     }
 
+    /**
+     * 获得该Fragment的所有内容（包括孩子的内容）
+     */
     public function getContent()
     {
         $content = $this->content;
@@ -41,6 +50,6 @@ class Fragment
     }
 
     public function __toString() {
-        return $this->content;
+        return $this->getContent();
     }
 }
