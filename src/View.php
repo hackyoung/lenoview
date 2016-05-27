@@ -423,7 +423,7 @@ class View
     {
         echo "<style type='text/css' rel='stylesheet'>\n";
         echo implode('', self::$css_content);
-        echo "</script>\n";
+        echo "</style>\n";
     }
 
     public static function appendCssContent($content)
