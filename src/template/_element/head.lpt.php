@@ -4,7 +4,6 @@
 <meta name='description' content="{$description}" />
 <meta name='author' content="{$author}" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<?php $js = ['jkal', 'fjakl', 'jfakl']; ?>
 <llist name="$js" id="j">
     <script src="$j" type="text/javascript"></script>
 </llist>
