@@ -17,6 +17,10 @@ class View
 
     const TYPE_AFTER  = 'after';
 
+    protected static $js_content = [];
+
+    protected static $css_content = [];
+
     /**
      * view 的查找路径, 通过View::addViewDir(); 
      * View::deleteViewDir()两个方法来配置View的搜索路径,
@@ -176,7 +180,13 @@ class View
         if(!$this->parent instanceof self && gettype($this->data) === 'array') {
             extract($this->data);
         }
-        return include $this->template->display();
+        include $this->template->display();
+        if($this->hasFragment('js')) {
+            self::showJs();
+        }
+        if($this->hasFragment('css')) {
+            self::showCss();
+        }
     }
 
     public function render()
@@ -368,5 +378,57 @@ class View
         throw new \InvalidArgumentException(
             sprintf("%s is not exists", $file)
         );
+    }
+
+    public static function beginJsContent()
+    {
+        ob_start();
+    }
+
+    public static function endJsContent()
+    {
+        $content = ob_get_contents();
+        if(@ob_end_clean()) {
+            return self::appendJsContent($content);
+        }
+        echo "</script>";
+    }
+
+    public static function appendJsContent($content)
+    {
+        $content = trim($content) . "\n";
+        self::$js_content[md5($content)] = $content;
+    }
+
+    public static function showJs()
+    {
+        echo "<script type='text/javascript'>\n";
+        echo implode('', self::$js_content);
+        echo "</script>\n";
+    }
+
+    public static function beginCssContent()
+    {
+        ob_start();
+    }
+
+    public static function endCssContent()
+    {
+        $content = ob_get_contents();
+        if(ob_end_clean()) {
+            return self::appendCssContent($content);
+        }
+    }
+    public static function showCss()
+    {
+        echo "<style type='text/css' rel='stylesheet'>\n";
+        echo implode('', self::$css_content);
+        echo "</script>\n";
+    }
+
+    public static function appendCssContent($content)
+    {
+        $content = trim($content) . "\n";
+        self::$css_content[md5($content)] = $content;
     }
 }

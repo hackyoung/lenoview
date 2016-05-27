@@ -42,6 +42,10 @@ class Template
         '\Leno\View\Token\NinEnd',
         '\Leno\View\Token\NotEmpty',
         '\Leno\View\Token\NotEmptyEnd',
+        '\Leno\View\Token\JsContentBegin',
+        '\Leno\View\Token\JsContentEnd',
+        '\Leno\View\Token\CssContentBegin',
+        '\Leno\View\Token\CssContentEnd',
     ];
 
     public function __construct($view) 
