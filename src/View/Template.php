@@ -20,6 +20,10 @@ class Template
     protected $view;
 
     protected $node_token_class = [
+        '\Leno\View\Token\JsContentBegin',
+        '\Leno\View\Token\JsContentEnd',
+        '\Leno\View\Token\CssContentBegin',
+        '\Leno\View\Token\CssContentEnd',
         '\Leno\View\Token\Extend',
         '\Leno\View\Token\ExtendEnd',
         '\Leno\View\Token\Fragment',
@@ -53,9 +57,9 @@ class Template
 
     public function display() 
     {
-//        if(!is_file($this->cachefile) || filemtime($this->cachefile) <= filemtime($this->view->getFile())) {
+        //if(!is_file($this->cachefile) || filemtime($this->cachefile) <= filemtime($this->view->getFile())) {
             $this->compile();
- //       }
+        //}
         return $this->cachefile;
     }
 
@@ -85,4 +89,3 @@ class Template
         self::$cachedir = $dir;
     }
 }
-?>

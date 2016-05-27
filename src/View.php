@@ -6,9 +6,8 @@ use \Leno\View\Template;
 
 class View 
 {
-
     /**
-     * @var view 文件的后缀名
+     *  view 文件的后缀名
      */
     const SUFFIX = '.lpt.php';
 
@@ -18,8 +17,14 @@ class View
 
     const TYPE_AFTER  = 'after';
 
+    protected static $js_content = [];
+
+    protected static $css_content = [];
+
+    protected static $js_src = '';
+
     /**
-     * @var view 的查找路径, 通过View::addViewDir(); 
+     * view 的查找路径, 通过View::addViewDir(); 
      * View::deleteViewDir()两个方法来配置View的搜索路径,
      * View::addViewDir('test');
      * View::$dir = ['test'];
@@ -31,7 +36,7 @@ class View
     ];
 
     /**
-     * @var array data View对象可以使用的数据,通过View::set方法来设置它
+     * array data View对象可以使用的数据,通过View::set方法来设置它
      */
     public $data = [
         '__head__' => [
@@ -47,47 +52,47 @@ class View
     protected static $templateClass = '\Leno\View\Template';
 
     /**
-     * @var Template template 处理该模板文件的Template对象
+     * Template template 处理该模板文件的Template对象
      */
     protected $template;
 
     /**
-     * @var array view 组合的View
+     * array view 组合的View
      */
     protected $view = [];
 
     /**
-     * @var View parent 该View的父亲View
+     * View parent 该View的父亲View
      */
     protected $parent;
 
     /**
-     * @var View child 继承该View的View对象
+     * View child 继承该View的View对象
      */
     protected $child;
 
     /**
-     * @var array 该View拥有的Fragment
+     *  array 该View拥有的Fragment
      */
     protected $fragments = [];
 
     /**
-     * @var string file View对象的模板文件的绝对路径文件
+     * string file View对象的模板文件的绝对路径文件
      */
     private $file;
 
     /**
-     * @var string temp_name start/endFragment的时候用
+     * string temp_name start/endFragment的时候用
      */
     private $temp_name;
 
     /**
-     * @var string temp_type start/endFragment的时候用
+     * string temp_type start/endFragment的时候用
      */
     private $temp_type = self::TYPE_REPLACE;
 
     /**
-     * @var 主题
+     * 主题
      */
     private $theme = 'default';
 
@@ -177,7 +182,13 @@ class View
         if(!$this->parent instanceof self && gettype($this->data) === 'array') {
             extract($this->data);
         }
-        return include $this->template->display();
+        include $this->template->display();
+        if($this->hasFragment('js')) {
+            self::showJs();
+        }
+        if($this->hasFragment('css')) {
+            self::showCss();
+        }
     }
 
     public function render()
@@ -369,5 +380,59 @@ class View
         throw new \InvalidArgumentException(
             sprintf("%s is not exists", $file)
         );
+    }
+
+    public static function beginJsContent($src)
+    {
+        self::$js_src = $src;
+        ob_start();
+    }
+
+    public static function endJsContent()
+    {
+        $content = ob_get_contents();
+        @ob_end_clean();
+        if(empty(self::$js_src)) {
+            return self::appendJsContent($content);
+        }
+        echo '<script src=\''.self::$js_src.'\' type=\'text/javascript\'></script>'."\n";
+    }
+
+    public static function appendJsContent($content)
+    {
+        $content = trim($content) . "\n";
+        self::$js_content[md5($content)] = $content;
+    }
+
+    public static function showJs()
+    {
+        echo "<script type='text/javascript'>\n";
+        echo implode('', self::$js_content);
+        echo "</script>\n";
+    }
+
+    public static function beginCssContent()
+    {
+        ob_start();
+    }
+
+    public static function endCssContent()
+    {
+        $content = ob_get_contents();
+        if(ob_end_clean()) {
+            return self::appendCssContent($content);
+        }
+    }
+    public static function showCss()
+    {
+        echo "<style type='text/css' rel='stylesheet'>\n";
+        echo implode('', self::$css_content);
+        echo "</style>\n";
+    }
+
+    public static function appendCssContent($content)
+    {
+        $content = trim($content) . "\n";
+        self::$css_content[md5($content)] = $content;
     }
 }

@@ -2,8 +2,8 @@
 	<?php $this->startFragment('body', 'replace'); ?>
         childs get
 	<?php $this->endFragment(); ?>
-    <?php self::beginJsContent('hjfkal'); ?><?php self::endJsContent(); ?>
-    <?php self::beginJsContent(''); ?>
+    <script src="hjfkal"><?php self::endJsContent(); ?>
+    <?php self::beginJsContent(); ?>
         console.log('hello world');
     <?php self::endJsContent(); ?>
     <?php self::beginCssContent(); ?>

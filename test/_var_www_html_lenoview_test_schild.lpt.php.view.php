@@ -6,7 +6,7 @@
             <?php $this->view('v', new \Leno\View('testjs'))->display(); ?>
         <?php } ?>
     <?php $this->endFragment(); ?>
-    <?php self::beginJsContent(''); ?>
+    <?php self::beginJsContent(); ?>
         console.log('child');
     <?php self::endJsContent(); ?>
 <?php $this->parent->display(); ?>

@@ -4,3 +4,7 @@
         hehehe
     </fragment>
 </p>
+<fragment name="js">
+</fragment>
+<fragment name="css">
+</fragment>
