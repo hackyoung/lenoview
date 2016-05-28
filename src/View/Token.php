@@ -30,8 +30,8 @@ abstract class Token
         if(!isset($attrarr[0])) {
             return '';
         }
-        $att = preg_replace('/'.$name.'=/', '', $attrarr[0]);
-        return preg_replace('/[\'\"\s]/', '', $att);
+        $att = trim(preg_replace('/'.$name.'=/', '', $attrarr[0]));
+        return preg_replace('/^[\"\']|[\'\"]$/', '', $att);
     }
 
     protected function varString($var) 
@@ -59,18 +59,9 @@ abstract class Token
         return $v;
     }
 
-    protected function staticMethodString($method)
+    protected function staticMethodString($func)
     {
-        $vararr = explode('.', $func);
-        if(count($vararr) == 1) {
-            return $func;
-        }
-        $v = $vararr[0];
-        array_splice($vararr, 0, 1);
-        foreach($vararr as $val) {
-            $v .= '::'.$val;
-        }
-        return $v;
+        return str_replace('.', '::', $func);
     }
 
     protected function right($input)

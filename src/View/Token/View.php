@@ -10,7 +10,6 @@ class View extends \Leno\View\Token
         $name = $this->attrValue('name', $matched);
         $data = $this->attrValue('data', $matched);
         $extend_data = $this->attrValue('extend_data', $matched);
-
         $ret = '<?php $this->view(\'v\', new \Leno\View(\''.$name.'\'';
         if(!empty($data)) {
             $ret .= ', '.$this->right($data);

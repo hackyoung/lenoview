@@ -68,12 +68,13 @@ $content = [
 ?>
 <extend name="_layout.default">
     <fragment name="head" type="after">
-        <script src="http://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+        <script src="http://code.jquery.com/jquery-2.2.4.min.js"></script>
     </fragment>
 	<fragment name="body">
         <div class="sidebar-container">
             <view name="_element.sidebar" data="{$content}" />
         </div>
+        {|self.getTemplateClass().getCacheDir()}
         <script>
             navbar.init({id: 'test'});
         </script>

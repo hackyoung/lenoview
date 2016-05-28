@@ -45,6 +45,7 @@ class Template
         '\Leno\View\Token\NotEmptyEnd',
         '\Leno\View\Token\VarToken',
         '\Leno\View\Token\Func',
+        '\Leno\View\Token\StaticMethod',
     ];
 
     public function __construct($view) 
