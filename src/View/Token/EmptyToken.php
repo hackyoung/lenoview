@@ -9,6 +9,6 @@ class EmptyToken extends \Leno\View\Token
     {
         $name = $this->attrValue('name', $matched);
         $var = $this->right($name);
-        return $this->condition('empty('.$var.')');
+        return $this->condition('empty('.$var.' ?? null)');
     }
 }

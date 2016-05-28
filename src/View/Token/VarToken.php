@@ -10,7 +10,7 @@ class VarToken extends \Leno\View\Token
         preg_match('/\{\$.*\}/U', $matched, $attrarr);
         $var = preg_replace('/[\{\}\$]/', '', $attrarr[0]);
         $v = $this->varString($var);
-        $v = '<?php echo '.$v.'; ?>';
+        $v = '<?php echo ('.$v.' ?? \'\'); ?>';
         return $v;
     }
 }

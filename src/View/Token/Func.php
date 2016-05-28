@@ -7,6 +7,6 @@ class Func extends \Leno\View\Token
 
     protected function replaceMatched($matched) : string
     {
-        return '<?php echo '.$this->funcString(preg_replace('/\{|\}|\:/', '', $matched)) . '; ?>';
+        return '<?php echo ('.$this->funcString(preg_replace('/\{|\}|\:/', '', $matched)) . ') ?? \'\'; ?>';
     }
 }

@@ -66,22 +66,22 @@ $content = [
     ]
 ];
 ?>
-<extend name="_layout.default">
-    <fragment name="head" type="after">
-        <script src="http://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
-    </fragment>
-	<fragment name="body">
+<?php $this->extend('_layout.default'); ?>
+    <?php $this->startFragment('head', 'after'); ?>
+        <?php self::beginJsContent('http://code.jquery.com/jquery-2.2.4.min.js'); ?><?php self::endJsContent(); ?>
+    <?php $this->endFragment(); ?>
+	<?php $this->startFragment('body', 'replace'); ?>
         <div class="sidebar-container">
-            <view name="_element.sidebar" data="{$content}" />
+            <?php $this->view('v', new \Leno\View('_element.sidebar', $content))->display(); ?>
         </div>
-        <script>
+        <?php self::beginJsContent(''); ?>
             navbar.init({id: 'test'});
-        </script>
-        <style>
+        <?php self::endJsContent(); ?>
+        <?php self::beginCssContent(); ?>
         .sidebar-container {
             display: inline-block;
             width: 400px;
         }
-        </style>
-	</fragment>
-</extend>
+        <?php self::endCssContent(); ?>
+	<?php $this->endFragment(); ?>
+<?php $this->parent->display(); ?>
