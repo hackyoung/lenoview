@@ -101,7 +101,7 @@ class View
      * @param string $view 基于查找路径的view文件
      * @param array $data 模板需要用的参数
      */
-    public function __construct($view, $data=[]) 
+    public function __construct($view, array $data = []) 
     {
         $this->file = $view;
         if(isset($data['__head__'])) {
@@ -179,22 +179,37 @@ class View
      */
     public function display() 
     {
+        //$cachefile = $this->getCacheFile();
+        //if(is_file($cachefile) && filemtime($cachefile) > filemtime($this->getFile())) {
+        //    return include $cachefile;
+        //}
         if(!$this->parent instanceof self && gettype($this->data) === 'array') {
             extract($this->data);
         }
+        //ob_start();
         include $this->template->display();
-        if($this->hasFragment('js')) {
+        if($this->hasFragment('___js___')) {
             self::showJs();
         }
-        if($this->hasFragment('css')) {
+        if($this->hasFragment('___css___')) {
             self::showCss();
         }
+        //$content = ob_get_contents();
+        //ob_end_flush();
+        //file_put_contents($cachefile, $content);
     }
+
+    //public function getCacheFile()
+    //{
+    //    $cachedir = self::getTemplateClass()::getCacheDir();
+    //    return $cachedir . '/' .'display_'.str_replace('/', '_', $this->getFile());
+    //}
 
     public function render()
     {
         return $this->display();
     }
+
     /**
      * 设置一个变量，在模板中使用
      * @param string $var 在模板中使用的变量名
@@ -204,7 +219,6 @@ class View
     {
         $this->data[$var] = $value;
     }
-
 
     /**
      * 获得一个组合的子View
@@ -391,7 +405,7 @@ class View
     public static function endJsContent()
     {
         $content = ob_get_contents();
-        @ob_end_clean();
+        ob_end_clean();
         if(empty(self::$js_src)) {
             return self::appendJsContent($content);
         }

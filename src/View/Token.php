@@ -7,6 +7,8 @@ abstract class Token
 
     protected $content;
 
+    abstract protected function replaceMatched($matched): string;
+
     public function __construct(string $content)
     {
         $this->content = $content;
@@ -17,13 +19,6 @@ abstract class Token
             return $this->replaceMatched($matches[0]);
         }, $this->content);
         return $content;
-    }
-
-    abstract protected function replaceMatched($matched): string;
-
-    public function getRegExp()
-    {
-        return $this->reg;
     }
 
     protected function attrValue($name, $line) 
@@ -64,13 +59,28 @@ abstract class Token
         return $v;
     }
 
+    protected function staticMethodString($method)
+    {
+        $vararr = explode('.', $func);
+        if(count($vararr) == 1) {
+            return $func;
+        }
+        $v = $vararr[0];
+        array_splice($vararr, 0, 1);
+        foreach($vararr as $val) {
+            $v .= '::'.$val;
+        }
+        return $v;
+    }
+
     protected function right($input)
     {
-        if(preg_match('/^\$/', $input)) {
-            return $this->varString(preg_replace('/^\$/', '', $input));
-        }
-        if (preg_match('/^\:/', $input)) {
-            return $this->funcString(preg_replace('/^\:/', '', $input));
+        if (preg_match('/^\{\$.*\}/', $input)) {
+            return $this->varString(preg_replace('/\$|\{|\}/', '', $input));
+        } elseif (preg_match('/^\{\:.*\}/', $input)) {
+            return $this->funcString(preg_replace('/\:|\{|\}/', '', $input));
+        } elseif (preg_match('/^\{\|.*\}/', $input)) {
+            return $this->staticMethodString(preg_replace('/\||\{|\}/', '', $input));
         }
         return '\''.$input.'\'';
     }

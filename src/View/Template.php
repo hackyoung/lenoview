@@ -26,13 +26,10 @@ class Template
         '\Leno\View\Token\CssContentEnd',
         '\Leno\View\Token\Extend',
         '\Leno\View\Token\ExtendEnd',
-        '\Leno\View\Token\Fragment',
         '\Leno\View\Token\StartFragment',
         '\Leno\View\Token\EndFragment',
         '\Leno\View\Token\EmptyToken',
         '\Leno\View\Token\EmptyEnd',
-        '\Leno\View\Token\VarToken',
-        '\Leno\View\Token\Func',
         '\Leno\View\Token\Llist',
         '\Leno\View\Token\LlistEnd',
         '\Leno\View\Token\In',
@@ -46,20 +43,22 @@ class Template
         '\Leno\View\Token\NinEnd',
         '\Leno\View\Token\NotEmpty',
         '\Leno\View\Token\NotEmptyEnd',
+        '\Leno\View\Token\VarToken',
+        '\Leno\View\Token\Func',
     ];
 
     public function __construct($view) 
     {
         $this->view = $view;
         $file = str_replace('/', '_', $view->getFile());
-        $this->cachefile = self::$cachedir . '/' . $file . self::SUFFIX;
+        $this->cachefile = self::$cachedir.'/'.$file.self::SUFFIX;
     }
 
     public function display() 
     {
-        //if(!is_file($this->cachefile) || filemtime($this->cachefile) <= filemtime($this->view->getFile())) {
+        if(!is_file($this->cachefile) || filemtime($this->cachefile) <= filemtime($this->view->getFile())) {
             $this->compile();
-        //}
+        }
         return $this->cachefile;
     }
 
@@ -87,5 +86,10 @@ class Template
     public static function setCacheDir($dir) 
     {
         self::$cachedir = $dir;
+    }
+
+    public static function getCacheDir()
+    {
+        return self::$cachedir;
     }
 }
