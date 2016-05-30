@@ -10,7 +10,7 @@ class Llist extends \Leno\View\Token
         $name = $this->attrValue('name', $matched);
         $id = $this->attrValue('id', $matched);
         $var = $this->right($name);
-        $ret = '<?php %s = %s ?? []; foreach(%s as %s) { ?>';
+        $ret = '<?php $__number__ = 0; %s = %s ?? []; foreach(%s as %s) { ?>';
         return sprintf($ret, $var, $var, $var, $this->varString($id));
     }
 }

@@ -3,7 +3,7 @@ namespace Leno\View\Token;
 
 class VarToken extends \Leno\View\Token
 {
-    protected $reg = '/\{\$.*\}/'; // 如{$hello.world.world}
+    protected $reg = '/\{\$.*\}/U'; // 如{$hello.world.world}
 
     protected function replaceMatched($matched) : string
     {

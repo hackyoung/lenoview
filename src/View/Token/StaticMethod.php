@@ -3,7 +3,7 @@ namespace Leno\View\Token;
 
 class StaticMethod extends \Leno\View\Token
 {
-    protected $reg = '/\{\|.*\}/';
+    protected $reg = '/\{\|.*\}/U';
 
     protected function replaceMatched($matched) : string
     {

@@ -74,7 +74,6 @@ $content = [
         <div class="sidebar-container">
             <view name="_element.sidebar" data="{$content}" />
         </div>
-        {|self.getTemplateClass().getCacheDir()}
         <script>
             navbar.init({id: 'test'});
         </script>
