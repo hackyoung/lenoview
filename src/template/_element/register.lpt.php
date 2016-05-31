@@ -15,3 +15,15 @@
 		<button class="leno-btn leno-btn-success" data-id="submit">注册</button>
 	</div>
 </div>
+<style>
+.log button {
+    width: 100%;
+}
+.log .leno-input-group {
+    width: 100%;
+}
+.log .leno-input-group label {
+    display: inline-block;
+    width: 20px;
+}
+</style>
