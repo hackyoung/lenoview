@@ -31,12 +31,14 @@
 <style>
 
 .leno-global-header div.begin {
+    padding-top: 50px;
+    margin-left: calc(50% - 300px);
+    width: 600px;
     display: flex;
     display: -webkit-flex;
     justify-content: space-between;
     flex-direction: row;
     flex-wrap: nowrap;
-    align-item:
 }
 
 .leno-global-header {
