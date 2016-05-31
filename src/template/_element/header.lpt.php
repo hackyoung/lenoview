@@ -1,6 +1,7 @@
 <?php
 /**
  * @param [
+ *      'background' => '',
  *      'user' => ['home' => '', 'portrait' => ''],
  *      'menu' => [
  *          [
@@ -13,9 +14,8 @@
  */
 ?>
 <header class="leno-global-header">
-    <div class="begin">
-        <view name="_element.login" />
-        <view name="_element.register" />
+    <div class="top">
+        <fragment name="top"></fragment>
     </div>
     <div class="bottom">
         <a href="{$user.home}">
@@ -30,10 +30,7 @@
 </header>
 <style>
 
-.leno-global-header div.begin {
-    padding-top: 50px;
-    margin-left: calc(50% - 300px);
-    width: 600px;
+.leno-global-header div.top {
     display: flex;
     display: -webkit-flex;
     justify-content: space-between;
@@ -44,7 +41,7 @@
 .leno-global-header {
     width: 100%;
     height: 400px;
-    background-image: url(http://pics.sc.chinaz.com/files/pic/pic9/201311/apic1843.jpg);
+    background-image: url({$background});
     background-repeat: no-repeat;
     background-size: 100%;
     background-position: center center;
