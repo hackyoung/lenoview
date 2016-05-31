@@ -13,7 +13,11 @@
  */
 ?>
 <header class="leno-global-header">
-    <div>
+    <div class="begin">
+        <view name="_element.login" />
+        <view name="_element.register" />
+    </div>
+    <div class="bottom">
         <a href="{$user.home}">
             <img src="{$user.portrait}" />
         </a>
@@ -25,6 +29,16 @@
     </div>
 </header>
 <style>
+
+.leno-global-header div.begin {
+    display: flex;
+    display: -webkit-flex;
+    justify-content: space-between;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-item:
+}
+
 .leno-global-header {
     width: 100%;
     height: 400px;
@@ -40,7 +54,7 @@
     color: white;
 }
 
-.leno-global-header>div {
+.leno-global-header>div.bottom {
     position: absolute;
     top: 335px;
     line-height: 50px;
@@ -48,11 +62,11 @@
     text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.6);
 }
 
-.leno-global-header>div a {
+.leno-global-header>div.bottom a {
     text-decoration: none;
 }
 
-.leno-global-header>div.fixed {
+.leno-global-header>div.bottom.fixed {
     position: fixed;
     top: 0px;
     width: 100%;
@@ -64,11 +78,15 @@
     text-shadow: 0px 0px 3px rgba(255, 255, 255, 0.6);
 }
 
-.leno-global-header>div.fixed .menu li a {
+.leno-global-header>div.bottom.fixed img {
+    border-radius: 80px;
+}
+
+.leno-global-header>div.bottom.fixed .menu li a {
     color: #444;
 }
 
-.leno-global-header>div>a>img {
+.leno-global-header>div.bottom>a>img {
     vertical-align: middle;
     width: 80px;
     height: 80px;
@@ -96,7 +114,7 @@
 <script>
 var change_top = false;
 $(window).scroll(function() {
-    var $scroll_div = $('.leno-global-header>div');
+    var $scroll_div = $('.leno-global-header>div.bottom');
     if(change_top) {
         $scroll_div.removeClass('fixed');
         $scroll_div.css('top', '319px');
@@ -107,8 +125,9 @@ $(window).scroll(function() {
     var real_top = div_top - top;
     if(real_top >= 0) {
         var rate = (319 - real_top)/319;
+        $scroll_div.find('img').css('border-radius', rate*80);
         $scroll_div.css('top', 335 - rate*(335 - 319));
-        $scroll_div.css('padding-left', rate*100 + 20);
+        $scroll_div.css('padding-left', rate*100 + 32);
         $scroll_div.find('.menu li').css('padding-left', rate*5 + 20);
         $scroll_div.find('.menu li').css('padding-right', rate*5 + 20);
     } else {
