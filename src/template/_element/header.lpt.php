@@ -40,12 +40,12 @@
 
 .leno-global-header {
     width: 100%;
-    height: 400px;
+    height: 300px;
     background-image: url({$background});
     background-repeat: no-repeat;
     background-size: 100%;
     background-position: center center;
-    background-color: #444;
+    background-color: #eee;
     box-shadow: 0px -50px 50px -50px rgba(0, 0, 0, 0.7) inset;
     -moz-box-shadow: 0px -50px 50px -50px rgba(0, 0, 0, 0.7) inset;
     -webkit-box-shadow: 0px -50px 50px -50px rgba(0, 0, 0, 0.7) inset;
@@ -55,7 +55,7 @@
 
 .leno-global-header>div.bottom {
     position: absolute;
-    top: 335px;
+    top: 235px;
     line-height: 50px;
     padding-left: 30px;
     text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.6);
@@ -123,9 +123,9 @@ $(window).scroll(function() {
     var div_top = parseInt($scroll_div.css('top'));
     var real_top = div_top - top;
     if(real_top >= 0) {
-        var rate = (319 - real_top)/319;
+        var rate = (219 - real_top)/219;
         $scroll_div.find('img').css('border-radius', rate*80);
-        $scroll_div.css('top', 335 - rate*(335 - 319));
+        $scroll_div.css('top', 235 - rate*(235 - 219));
         $scroll_div.css('padding-left', rate*100 + 32);
         $scroll_div.find('.menu li').css('padding-left', rate*5 + 20);
         $scroll_div.find('.menu li').css('padding-right', rate*5 + 20);

@@ -40,7 +40,7 @@ class View
      */
     public $data = [
         '__head__' => [
-            'title' => '',
+            'title' => 'leno',
             'keywords' => 'leno,hackyoung,view',
             'description' => 'a simple framework component',
             'author' => 'hackyoung@163.com',
@@ -91,6 +91,8 @@ class View
      */
     private $temp_type = self::TYPE_REPLACE;
 
+    private $temp_view;
+
     /**
      * 主题
      */
@@ -101,7 +103,7 @@ class View
      * @param string $view 基于查找路径的view文件
      * @param array $data 模板需要用的参数
      */
-    public function __construct($view, array $data = []) 
+    public function __construct($view, array $data = [])
     {
         $this->file = $view;
         if(isset($data['__head__'])) {
@@ -132,22 +134,6 @@ class View
         $this->set($key, $val);
         return $this;
     }
-
-	public function __call($method, $parameters=null)
-	{
-		$series = explode('_', \unCamelCase($method));
-		if(empty($series[0])) {
-			throw new \Exception('Controller::'.$method.' Not Defined');
-		}
-		switch($series[0]) {
-			case 'set':
-				array_splice($series, 0, 1);
-				$key = implode('_', $series);
-				return $this->set($key, $parameters[0]);
-				break;
-		}
-		throw new \Leno\Exception('Controller::'.$method.' Not Defined');
-	}
 
 
     /**
@@ -194,16 +180,7 @@ class View
         if($this->hasFragment('___css___')) {
             self::showCss();
         }
-        //$content = ob_get_contents();
-        //ob_end_flush();
-        //file_put_contents($cachefile, $content);
     }
-
-    //public function getCacheFile()
-    //{
-    //    $cachedir = self::getTemplateClass()::getCacheDir();
-    //    return $cachedir . '/' .'display_'.str_replace('/', '_', $this->getFile());
-    //}
 
     public function render()
     {
@@ -245,6 +222,11 @@ class View
         }
         $this->view[$idx] = $view;
         return $view;
+    }
+
+    public function v($idx)
+    {
+        return $this->view[$idx];
     }
 
     /**
@@ -347,12 +329,30 @@ class View
         array_splice(self::$dir, $keys[0], 1);
     }
 
+    protected function startView($name, $data = [], $expend_data = false)
+    {
+        $view = new self($name, $data);
+        $this->view($name, $view, $expend_data);
+        $this->temp_view = $name;
+    }
+
+    protected function endView()
+    {
+        $name = $this->temp_view;
+        $this->v($name)->display();
+        $this->temp_view = null;
+    }
+
     /**
      * 在模板文件中使用，标记从该方法之后的内容为一个fragment的内容
      * @param string $name fragment的名字
      */
-    protected function startFragment($name, $type = self::TYPE_REPLACE) 
+    public function startFragment($name, $type = self::TYPE_REPLACE) 
     {
+        if(!empty($this->temp_view)) {
+            $this->v($this->temp_view)->startFragment($name, $type);
+            return; 
+        }
         $this->temp_name = $name;
         $this->temp_type = $type;
         ob_start();
@@ -361,8 +361,12 @@ class View
     /**
      * 在模板文件中使用，标记一个fragment内容结束的地方
      */
-    protected function endFragment()
+    public function endFragment()
     {
+        if(!empty($this->temp_view)) {
+            $this->v($this->temp_view)->endFragment();
+            return;
+        }
         $name = $this->temp_name;
         if(empty($name)) {
             return;
@@ -380,6 +384,7 @@ class View
         if(!$this->parent instanceof self) {
             $fragment->display();
         }
+        $this->temp_view = null;
     }
 
     protected function searchFile($view)

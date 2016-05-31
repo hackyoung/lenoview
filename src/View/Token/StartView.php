@@ -1,9 +1,9 @@
 <?php
 namespace Leno\View\Token;
 
-class View extends \Leno\View\Token
+class StartView extends \Leno\View\Token
 {
-    protected $reg = '/\<view.*\/\>/U';
+    protected $reg = '/\<view.*\>/U';
 
     protected function replaceMatched($matched) : string
     {
@@ -11,7 +11,7 @@ class View extends \Leno\View\Token
         $data = $this->attrValue('data', $matched);
         $extend_data = $this->attrValue('extend_data', $matched);
         return sprintf(
-            '<?php $this->startView(%s %s %s); $this->endView(); ?>',
+            '<?php $this->startView(%s %s %s); ?>',
             $this->right($name),
             (!empty($data)) ? ', '.$this->right($data) : '',
             $extend_data === 'true' ? ', true' : ''

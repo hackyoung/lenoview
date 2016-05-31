@@ -34,7 +34,7 @@ $content = [
         <script src="http://code.jquery.com/jquery-2.2.4.min.js"></script>
     </fragment>
 	<fragment name="body">
-        <view name="_element.header" data="{$content}" />
+        <view name="_element.header" data="{$content}"></view>
         <div style="height: 1000px">
         </div>
         <style>
