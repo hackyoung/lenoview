@@ -29,12 +29,12 @@ $content = [
     ],
 ];
 ?>
-<extend name="_layout.default">
+<extend name="leno._layout.default">
     <fragment name="head" type="after">
         <script src="http://code.jquery.com/jquery-2.2.4.min.js"></script>
     </fragment>
 	<fragment name="body">
-        <view name="_element.header" data="{$content}" />
+        <view name="leno._element.header" data="{$content}" />
         <div style="height: 1000px">
         </div>
         <style>

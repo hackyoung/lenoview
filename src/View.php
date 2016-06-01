@@ -32,7 +32,7 @@ class View
      * View::$dir = [];
      */
     protected static $dir = [
-        __DIR__ . '/template',
+        'leno' => [__DIR__ . '/template'],
     ];
 
     /**
@@ -287,7 +287,9 @@ class View
      */
     public function getFile() 
     {
-        $view = $this->theme .'.'. $this->file;
+        $view = preg_replace_callback('/^\w\./U', function($matches) {
+            return $matches[0] . '.' . $this->theme;
+        }, $this->file);
         try {
             return $this->searchFile($view);
         } catch(\Exception $e) {
@@ -315,37 +317,6 @@ class View
         }
     }
 
-    public static function setTemplateClass($templateClass)
-    {
-        self::$templateClass = $templateClass;
-    }
-
-    public static function getTemplateClass()
-    {
-        return self::$templateClass;
-    }
-
-    public static function newTemplate(View $view)
-    {
-        return new self::$templateClass($view);
-    }
-
-    public static function addViewDir($dir) 
-    {
-        if(!is_dir($dir)) {
-            return;
-        }
-        if(in_array($dir, self::$dir)) {
-            return;
-        }
-        array_unshift(self::$dir, $dir);
-    }
-
-    public static function deleteViewDir($dir) 
-    {
-        $keys = array_keys(self::$dir, $dir);
-        array_splice(self::$dir, $keys[0], 1);
-    }
 
     /**
      * 在模板文件中使用，标记从该方法之后的内容为一个fragment的内容
@@ -384,15 +355,28 @@ class View
 
     protected function searchFile($view)
     {
-        $last = str_replace(".", "/", $view) . self::SUFFIX;
-        foreach(self::$dir as $dir) {
+        $base_dir = false;
+        foreach(self::$dir as $prefix => $dir) {
+            if(preg_match('/^'.$prefix.'/', $view)) {
+                $base_dir = $dir;
+                $rest_view = preg_replace('/^'.$prefix.'\./','', $view);
+                break;
+            }
+        }
+        if(!is_array($base_dir)) {
+            throw new \InvalidArgumentException(
+                sprintf("%s is not exists", $view)
+            );
+        }
+        $last = str_replace(".", "/", $rest_view) . self::SUFFIX;
+        foreach($base_dir as $dir) {
             $file = preg_replace('/\/$/', '', $dir) . '/' . $last;
             if(is_file($file)) {
                 return $file;
             }
         }
         throw new \InvalidArgumentException(
-            sprintf("%s is not exists", $file)
+            sprintf("%s is not exists", $view)
         );
     }
 
@@ -448,5 +432,35 @@ class View
     {
         $content = trim($content) . "\n";
         self::$css_content[md5($content)] = $content;
+    }
+
+    public static function setTemplateClass($templateClass)
+    {
+        self::$templateClass = $templateClass;
+    }
+
+    public static function getTemplateClass()
+    {
+        return self::$templateClass;
+    }
+
+    public static function newTemplate(View $view)
+    {
+        return new self::$templateClass($view);
+    }
+
+    public static function addViewDir($prefix, $dir) 
+    {
+        if(!is_dir($dir)) {
+            return;
+        }
+        if(!isset(self::$dir[$prefix])) {
+            self::$dir[$prefix] = [$dir];
+            return;
+        }
+        if(in_array($dir, self::$dir[$prefix])) {
+            return;
+        }
+        array_unshift(self::$dir[$prefix], $dir);
     }
 }

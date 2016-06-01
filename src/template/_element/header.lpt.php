@@ -54,6 +54,7 @@ $height = $height ?? 300;
     -webkit-box-shadow: 0px -50px 50px -50px rgba(0, 0, 0, 0.7) inset;
     border-bottom: 1px solid #999;
     color: white;
+    margin-bottom: 20px;
 }
 
 .leno-global-header>div.bottom {

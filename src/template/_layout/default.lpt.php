@@ -2,7 +2,7 @@
 <html>
     <head>
         <fragment name="head">
-            <view name="_element.head" data="{$__head__}" />
+            <view name="leno._element.head" data="{$__head__}" />
         </fragment>
     </head>
     <body>
