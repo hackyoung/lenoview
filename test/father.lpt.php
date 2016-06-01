@@ -2,6 +2,6 @@
 <p>
 	<fragment name="body">
         hehehe
-        <fragment name="hello"></fragment>
+        <fragment name="hello" />
     </fragment>
 </p>

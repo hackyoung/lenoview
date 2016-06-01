@@ -337,7 +337,9 @@ class View
             'type' => $temp['type'],
             'fragment' => $fragment
         ];
-        $fragment->display();
+        if(!$this->parent instanceof self) {
+            $fragment->display();
+        }
     }
 
     protected function searchFile($view)
