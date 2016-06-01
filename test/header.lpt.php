@@ -26,7 +26,7 @@ $content = [
             'title' => '设置',
             'href' => ''
         ],
-    ]
+    ],
 ];
 ?>
 <extend name="_layout.default">

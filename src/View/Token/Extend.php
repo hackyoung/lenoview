@@ -8,6 +8,6 @@ class Extend extends \Leno\View\Token
     protected function replaceMatched($matched) : string
     {
         $name = $this->attrValue('name', $matched);
-        return '<?php $this->extend(\''.$name.'\'); ?>';
+        return '<?php $this->extend('.$this->right($name).'); ?>';
     }
 }
