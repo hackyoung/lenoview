@@ -84,12 +84,7 @@ class View
     /**
      * string temp_name start/endFragment的时候用
      */
-    private $temp_name;
-
-    /**
-     * string temp_type start/endFragment的时候用
-     */
-    private $temp_type = self::TYPE_REPLACE;
+    private $temp_fragment = [];
 
     /**
      * 主题
@@ -179,31 +174,25 @@ class View
      */
     public function display() 
     {
-        //$cachefile = $this->getCacheFile();
-        //if(is_file($cachefile) && filemtime($cachefile) > filemtime($this->getFile())) {
-        //    return include $cachefile;
-        //}
         if(!$this->parent instanceof self && gettype($this->data) === 'array') {
             extract($this->data);
         }
+        //$cachefile = '/var/www/html/test/tmp/test_'.str_replace('/', '_',$this->getFile()).'.html';
         //ob_start();
         include $this->template->display();
+        //echo "<pre>";
+        //var_dump($this);
+        //$content = ob_get_contents();
+        //ob_end_flush();
+        //file_put_contents($cachefile, $content);
+
         if($this->hasFragment('___js___')) {
             self::showJs();
         }
         if($this->hasFragment('___css___')) {
             self::showCss();
         }
-        //$content = ob_get_contents();
-        //ob_end_flush();
-        //file_put_contents($cachefile, $content);
     }
-
-    //public function getCacheFile()
-    //{
-    //    $cachedir = self::getTemplateClass()::getCacheDir();
-    //    return $cachedir . '/' .'display_'.str_replace('/', '_', $this->getFile());
-    //}
 
     public function render()
     {
@@ -324,8 +313,7 @@ class View
      */
     protected function startFragment($name, $type = self::TYPE_REPLACE) 
     {
-        $this->temp_name = $name;
-        $this->temp_type = $type;
+        $this->temp_fragment[] = ['name' => $name, 'type' => $type];
         ob_start();
     }
 
@@ -334,7 +322,8 @@ class View
      */
     protected function endFragment()
     {
-        $name = $this->temp_name;
+        $temp = array_pop($this->temp_fragment);
+        $name = $temp['name'];
         if(empty($name)) {
             return;
         }
@@ -345,12 +334,10 @@ class View
             $fragment->setChild($this->child->getFragment($name));
         }
         $this->fragments[$name] = [
-            'type' => $this->temp_type,
+            'type' => $temp['type'],
             'fragment' => $fragment
         ];
-        if(!$this->parent instanceof self) {
-            $fragment->display();
-        }
+        $fragment->display();
     }
 
     protected function searchFile($view)

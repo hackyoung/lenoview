@@ -2,9 +2,6 @@
 <p>
 	<fragment name="body">
         hehehe
+        <fragment name="hello"></fragment>
     </fragment>
 </p>
-<fragment name="js">
-</fragment>
-<fragment name="css">
-</fragment>
