@@ -12,12 +12,13 @@
  *      ]
  * ]
  */
+$height = $height ?? 300;
 ?>
-<header class="leno-global-header">
-    <div class="top">
+<header class="leno-global-header" style="height: {$height}px;">
+    <div class="top" style="height: {$height - 50}px;">
         <fragment name="top"></fragment>
     </div>
-    <div class="bottom">
+    <div class="bottom" style="top: {$height - 65}px;">
         <a href="{$user.home}">
             <img src="{$user.portrait}" />
         </a>
@@ -33,7 +34,9 @@
 .leno-global-header div.top {
     display: flex;
     display: -webkit-flex;
-    justify-content: space-between;
+    height: 350px;
+    justify-content: center;
+    align-items: center;
     flex-direction: row;
     flex-wrap: nowrap;
 }
@@ -51,6 +54,7 @@
     -webkit-box-shadow: 0px -50px 50px -50px rgba(0, 0, 0, 0.7) inset;
     border-bottom: 1px solid #999;
     color: white;
+    margin-bottom: 20px;
 }
 
 .leno-global-header>div.bottom {
@@ -112,20 +116,29 @@
 </style>
 <script>
 var change_top = false;
+var height = {$height};
 $(window).scroll(function() {
+    var dest = height - 80;
+    var origin = height - 65;
     var $scroll_div = $('.leno-global-header>div.bottom');
     if(change_top) {
         $scroll_div.removeClass('fixed');
-        $scroll_div.css('top', '319px');
+        $scroll_div.css('top', dest);
         change_top = false;
     }
     var top = $(window).scrollTop();
     var div_top = parseInt($scroll_div.css('top'));
     var real_top = div_top - top;
     if(real_top >= 0) {
+<<<<<<< HEAD
         var rate = (219 - real_top)/219;
         $scroll_div.find('img').css('border-radius', rate*80);
         $scroll_div.css('top', 235 - rate*(235 - 219));
+=======
+        var rate = (dest - real_top)/dest;
+        $scroll_div.find('img').css('border-radius', rate*80);
+        $scroll_div.css('top', origin - rate*(origin - dest));
+>>>>>>> 913acb2745f5e4fc6f58029372eb2204ed9ad7e4
         $scroll_div.css('padding-left', rate*100 + 32);
         $scroll_div.find('.menu li').css('padding-left', rate*5 + 20);
         $scroll_div.find('.menu li').css('padding-right', rate*5 + 20);

@@ -26,7 +26,7 @@
         </a>
         <notempty name="{$item.items}">
             <?php $item_content = ['level' => ($level ?? '').'-'.$__number__, 'content' =>$item['items']]; ?>
-            <view name="_element.sidebar" data="{$item_content}" />
+            <view name="leno._element.sidebar" data="{$item_content}" />
         </notempty>
         </li>
     </llist>

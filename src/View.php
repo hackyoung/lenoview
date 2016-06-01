@@ -32,7 +32,7 @@ class View
      * View::$dir = [];
      */
     protected static $dir = [
-        __DIR__ . '/template',
+        'leno' => [__DIR__ . '/template'],
     ];
 
     /**
@@ -84,12 +84,8 @@ class View
     /**
      * string temp_name start/endFragment的时候用
      */
-    private $temp_name;
+    private $temp_fragment = [];
 
-    /**
-     * string temp_type start/endFragment的时候用
-     */
-    private $temp_type = self::TYPE_REPLACE;
 
     private $temp_view;
 
@@ -116,7 +112,8 @@ class View
         $this->template = self::newTemplate($this);
     }
 
-    public function __toString() {
+    public function __toString() 
+    {
         ob_start();
         $this->render();
         $content = ob_get_contents();
@@ -165,15 +162,18 @@ class View
      */
     public function display() 
     {
-        //$cachefile = $this->getCacheFile();
-        //if(is_file($cachefile) && filemtime($cachefile) > filemtime($this->getFile())) {
-        //    return include $cachefile;
-        //}
         if(!$this->parent instanceof self && gettype($this->data) === 'array') {
             extract($this->data);
         }
+        //$cachefile = '/var/www/html/test/tmp/test_'.str_replace('/', '_',$this->getFile()).'.html';
         //ob_start();
         include $this->template->display();
+        //echo "<pre>";
+        //var_dump($this);
+        //$content = ob_get_contents();
+        //ob_end_flush();
+        //file_put_contents($cachefile, $content);
+
         if($this->hasFragment('___js___')) {
             self::showJs();
         }
@@ -269,7 +269,9 @@ class View
      */
     public function getFile() 
     {
-        $view = $this->theme .'.'. $this->file;
+        $view = preg_replace_callback('/^\w\./U', function($matches) {
+            return $matches[0] . '.' . $this->theme;
+        }, $this->file);
         try {
             return $this->searchFile($view);
         } catch(\Exception $e) {
@@ -297,37 +299,6 @@ class View
         }
     }
 
-    public static function setTemplateClass($templateClass)
-    {
-        self::$templateClass = $templateClass;
-    }
-
-    public static function getTemplateClass()
-    {
-        return self::$templateClass;
-    }
-
-    public static function newTemplate(View $view)
-    {
-        return new self::$templateClass($view);
-    }
-
-    public static function addViewDir($dir) 
-    {
-        if(!is_dir($dir)) {
-            return;
-        }
-        if(in_array($dir, self::$dir)) {
-            return;
-        }
-        array_unshift(self::$dir, $dir);
-    }
-
-    public static function deleteViewDir($dir) 
-    {
-        $keys = array_keys(self::$dir, $dir);
-        array_splice(self::$dir, $keys[0], 1);
-    }
 
     protected function startView($name, $data = [], $expend_data = false)
     {
@@ -347,14 +318,13 @@ class View
      * 在模板文件中使用，标记从该方法之后的内容为一个fragment的内容
      * @param string $name fragment的名字
      */
-    public function startFragment($name, $type = self::TYPE_REPLACE) 
+    public function startFragment($name, $type = self::TYPE_REPLACE, $show = false) 
     {
-        if(!empty($this->temp_view)) {
-            $this->v($this->temp_view)->startFragment($name, $type);
-            return; 
-        }
-        $this->temp_name = $name;
-        $this->temp_type = $type;
+        $this->temp_fragment[] = [
+            'name' => $name,
+            'show' => $show,
+            'type' => $type
+        ];
         ob_start();
     }
 
@@ -363,11 +333,8 @@ class View
      */
     public function endFragment()
     {
-        if(!empty($this->temp_view)) {
-            $this->v($this->temp_view)->endFragment();
-            return;
-        }
-        $name = $this->temp_name;
+        $temp = array_pop($this->temp_fragment);
+        $name = $temp['name'];
         if(empty($name)) {
             return;
         }
@@ -378,26 +345,38 @@ class View
             $fragment->setChild($this->child->getFragment($name));
         }
         $this->fragments[$name] = [
-            'type' => $this->temp_type,
+            'type' => $temp['type'],
             'fragment' => $fragment
         ];
-        if(!$this->parent instanceof self) {
+        if(!$this->parent instanceof self || $temp['show']) {
             $fragment->display();
         }
-        $this->temp_view = null;
     }
 
     protected function searchFile($view)
     {
-        $last = str_replace(".", "/", $view) . self::SUFFIX;
-        foreach(self::$dir as $dir) {
+        $base_dir = false;
+        foreach(self::$dir as $prefix => $dir) {
+            if(preg_match('/^'.$prefix.'/', $view)) {
+                $base_dir = $dir;
+                $rest_view = preg_replace('/^'.$prefix.'\./','', $view);
+                break;
+            }
+        }
+        if(!is_array($base_dir)) {
+            throw new \InvalidArgumentException(
+                sprintf("%s is not exists", $view)
+            );
+        }
+        $last = str_replace(".", "/", $rest_view) . self::SUFFIX;
+        foreach($base_dir as $dir) {
             $file = preg_replace('/\/$/', '', $dir) . '/' . $last;
             if(is_file($file)) {
                 return $file;
             }
         }
         throw new \InvalidArgumentException(
-            sprintf("%s is not exists", $file)
+            sprintf("%s is not exists", $view)
         );
     }
 
@@ -453,5 +432,35 @@ class View
     {
         $content = trim($content) . "\n";
         self::$css_content[md5($content)] = $content;
+    }
+
+    public static function setTemplateClass($templateClass)
+    {
+        self::$templateClass = $templateClass;
+    }
+
+    public static function getTemplateClass()
+    {
+        return self::$templateClass;
+    }
+
+    public static function newTemplate(View $view)
+    {
+        return new self::$templateClass($view);
+    }
+
+    public static function addViewDir($prefix, $dir) 
+    {
+        if(!is_dir($dir)) {
+            return;
+        }
+        if(!isset(self::$dir[$prefix])) {
+            self::$dir[$prefix] = [$dir];
+            return;
+        }
+        if(in_array($dir, self::$dir[$prefix])) {
+            return;
+        }
+        array_unshift(self::$dir[$prefix], $dir);
     }
 }

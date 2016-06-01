@@ -27,6 +27,7 @@ class Template
         '\Leno\View\Token\View',
         '\Leno\View\Token\Extend',
         '\Leno\View\Token\ExtendEnd',
+        '\Leno\View\Token\Fragment',
         '\Leno\View\Token\StartFragment',
         '\Leno\View\Token\EndFragment',
         '\Leno\View\Token\StartView',
@@ -59,9 +60,9 @@ class Template
 
     public function display() 
     {
-        if(!is_file($this->cachefile) || filemtime($this->cachefile) <= filemtime($this->view->getFile())) {
+        //if(!is_file($this->cachefile) || filemtime($this->cachefile) <= filemtime($this->view->getFile())) {
             $this->compile();
-        }
+        //}
         return $this->cachefile;
     }
 
