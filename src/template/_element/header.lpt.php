@@ -130,15 +130,9 @@ $(window).scroll(function() {
     var div_top = parseInt($scroll_div.css('top'));
     var real_top = div_top - top;
     if(real_top >= 0) {
-<<<<<<< HEAD
-        var rate = (219 - real_top)/219;
-        $scroll_div.find('img').css('border-radius', rate*80);
-        $scroll_div.css('top', 235 - rate*(235 - 219));
-=======
         var rate = (dest - real_top)/dest;
         $scroll_div.find('img').css('border-radius', rate*80);
         $scroll_div.css('top', origin - rate*(origin - dest));
->>>>>>> 913acb2745f5e4fc6f58029372eb2204ed9ad7e4
         $scroll_div.css('padding-left', rate*100 + 32);
         $scroll_div.find('.menu li').css('padding-left', rate*5 + 20);
         $scroll_div.find('.menu li').css('padding-right', rate*5 + 20);
