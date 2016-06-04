@@ -121,22 +121,5 @@ $(window).scroll(function() {
     });
     $scroll_div.find('img').css('border-radius', rate*80);
     $scroll_div.removeClass('fixed');
-    /*
-    if(change_top) {
-        $scroll_div.removeClass('fixed');
-        $scroll_div.css('top', dest);
-        change_top = false;
-    }
-    if(real_top >= 0) {
-        $scroll_div.find('img').css('border-radius', rate*80);
-        $scroll_div.css('top', origin - rate*(origin - dest));
-        $scroll_div.css('padding-left', rate*100 + 32);
-        $scroll_div.find('.menu li').css('padding-left', rate*5 + 20);
-        $scroll_div.find('.menu li').css('padding-right', rate*5 + 20);
-    } else {
-        $scroll_div.addClass('fixed').css('top', '0px');
-        change_top = true;
-    }
-     */
 });
 </script>
