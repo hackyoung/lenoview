@@ -110,6 +110,8 @@ $height = $height ?? 300;
         border: 1px solid #999;
     }
     .leno-global-header ul.menu {
+        position: relative;
+        top: 3px;
         padding: 0px;
         margin: 0px;
         display: inline-block;
