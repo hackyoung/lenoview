@@ -165,15 +165,7 @@ class View
         if(!$this->parent instanceof self && gettype($this->data) === 'array') {
             extract($this->data);
         }
-        //$cachefile = '/var/www/html/test/tmp/test_'.str_replace('/', '_',$this->getFile()).'.html';
-        //ob_start();
         include $this->template->display();
-        //echo "<pre>";
-        //var_dump($this);
-        //$content = ob_get_contents();
-        //ob_end_flush();
-        //file_put_contents($cachefile, $content);
-
         if($this->hasFragment('___js___')) {
             self::showJs();
         }
