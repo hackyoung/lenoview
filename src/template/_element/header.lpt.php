@@ -65,6 +65,7 @@ $height = $height ?? 300;
     text-decoration: none;
 }
 .leno-global-header>div.bottom.fixed {
+    position: fixed;
     width: 100%;
     padding-left: 120px;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
@@ -108,6 +109,10 @@ $(window).scroll(function() {
     var dest = height - 80;
     var origin = height - 65;
     var $scroll_div = $('.leno-global-header>div.bottom');
+    if(window.scrollY > dest) {
+        $scroll_div.addClass('fixed').css('top', 0);
+        return;
+    }
     var rate = Math.min(1, window.scrollY/parseFloat($scroll_div.css('top')));
     var left = Math.ceil(rate*100 + 32);
     $scroll_div.css({
@@ -115,10 +120,6 @@ $(window).scroll(function() {
         paddingLeft: left + 'px'
     });
     $scroll_div.find('img').css('border-radius', rate*80);
-    if(window.scrollY > dest) {
-        $scroll_div.addClass('fixed');
-        return;
-    }
     $scroll_div.removeClass('fixed');
     /*
     if(change_top) {
