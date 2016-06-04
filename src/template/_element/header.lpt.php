@@ -112,8 +112,7 @@ $(window).scroll(function() {
     var left = Math.ceil(rate*100 + 32);
     $scroll_div.css({
         top: Math.max((origin - (rate)*15), window.scrollY) + 'px',
-        paddingLeft: left + 'px',
-        width: 'calc(100% - '+left+'px)'
+        paddingLeft: left + 'px'
     });
     $scroll_div.find('img').css('border-radius', rate*80);
     if(window.scrollY > dest) {
