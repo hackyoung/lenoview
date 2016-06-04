@@ -30,7 +30,6 @@ $height = $height ?? 300;
     </div>
 </header>
 <style>
-
 .leno-global-header div.top {
     display: flex;
     display: -webkit-flex;
@@ -40,7 +39,6 @@ $height = $height ?? 300;
     flex-direction: row;
     flex-wrap: nowrap;
 }
-
 .leno-global-header {
     width: 100%;
     height: 300px;
@@ -56,7 +54,6 @@ $height = $height ?? 300;
     color: white;
     margin-bottom: 20px;
 }
-
 .leno-global-header>div.bottom {
     position: absolute;
     top: 235px;
@@ -64,14 +61,10 @@ $height = $height ?? 300;
     padding-left: 30px;
     text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.6);
 }
-
 .leno-global-header>div.bottom a {
     text-decoration: none;
 }
-
 .leno-global-header>div.bottom.fixed {
-    position: fixed;
-    top: 0px;
     width: 100%;
     padding-left: 120px;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
@@ -80,35 +73,29 @@ $height = $height ?? 300;
     background-image: -webkit-linear-gradient(top, #fff, #f0f0f0);
     text-shadow: 0px 0px 3px rgba(255, 255, 255, 0.6);
 }
-
 .leno-global-header>div.bottom.fixed img {
     border-radius: 80px;
 }
-
 .leno-global-header>div.bottom.fixed .menu li a {
     color: #444;
 }
-
 .leno-global-header>div.bottom>a>img {
     vertical-align: middle;
     width: 80px;
     height: 80px;
     border: 1px solid #999;
 }
-
 .leno-global-header ul.menu {
     padding: 0px;
     margin: 0px;
     display: inline-block;
 }
-
 .leno-global-header ul.menu li {
     height: 50px;
     padding: 0px 20px;
     list-style: none;
     display: inline-block;
 }
-
 .leno-global-header ul.menu li a {
     color: white;
     text-decoration: none;
@@ -121,16 +108,26 @@ $(window).scroll(function() {
     var dest = height - 80;
     var origin = height - 65;
     var $scroll_div = $('.leno-global-header>div.bottom');
+    var rate = Math.min(1, window.scrollY/parseFloat($scroll_div.css('top')));
+    var left = Math.ceil(rate*100 + 32);
+    $scroll_div.css({
+        top: Math.max((origin - (rate)*15), window.scrollY) + 'px',
+        paddingLeft: left + 'px',
+        width: 'calc(100% - '+left+'px)'
+    });
+    $scroll_div.find('img').css('border-radius', rate*80);
+    if(window.scrollY > dest) {
+        $scroll_div.addClass('fixed');
+        return;
+    }
+    $scroll_div.removeClass('fixed');
+    /*
     if(change_top) {
         $scroll_div.removeClass('fixed');
         $scroll_div.css('top', dest);
         change_top = false;
     }
-    var top = $(window).scrollTop();
-    var div_top = parseInt($scroll_div.css('top'));
-    var real_top = div_top - top;
     if(real_top >= 0) {
-        var rate = (dest - real_top)/dest;
         $scroll_div.find('img').css('border-radius', rate*80);
         $scroll_div.css('top', origin - rate*(origin - dest));
         $scroll_div.css('padding-left', rate*100 + 32);
@@ -140,5 +137,6 @@ $(window).scroll(function() {
         $scroll_div.addClass('fixed').css('top', '0px');
         change_top = true;
     }
+     */
 });
 </script>
