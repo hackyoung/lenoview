@@ -2,7 +2,7 @@
 /**
  * @param [
  *      'background' => '',
- *      'user' => ['home' => '', 'portrait' => ''],
+ *      'visitor' => ['home' => '', 'portrait' => ''],
  *      'menu' => [
  *          [
  *              'id' => '',
@@ -20,8 +20,8 @@ $height = $height ?? 300;
     </div>
     <div class="bottom" style="top: {$height - 65}px;">
         <div class="left">
-            <a href="{$user.home}">
-                <img src="{$user.portrait}" />
+            <a href="{$visitor.home}">
+                <img src="{$visitor.portrait}" />
             </a>
             <ul class="menu">
                 <llist name="{$menu}" id="item">
@@ -80,9 +80,9 @@ $height = $height ?? 300;
         position: fixed;
         width: 100%;
         box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
-        background-image: linear-gradient(top, rgba(255,255,255, 0.8), rgba(240,240,240, 0.8));
-        background-image: -moz-linear-gradient(top, rgba(255,255,255, 0.8), rgba(240,240,240, 0.8));
-        background-image: -webkit-linear-gradient(top, rgba(255,255,255, 0.8), rgba(240,240,240, 0.8));
+        background-image: linear-gradient(top, #fff, #f0f0f0);
+        background-image: -moz-linear-gradient(top, #fff, #f0f0f0);
+        background-image: -webkit-linear-gradient(top, #fff, #f0f0f0);
         text-shadow: 0px 0px 3px rgba(255, 255, 255, 0.6);
     }
     .leno-global-header>div.bottom.fixed>div.left {
