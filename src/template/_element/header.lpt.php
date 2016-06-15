@@ -2,7 +2,7 @@
 /**
  * @param [
  *      'background' => '',
- *      'user' => ['home' => '', 'portrait' => ''],
+ *      'visitor' => ['home' => '', 'portrait' => ''],
  *      'menu' => [
  *          [
  *              'id' => '',
@@ -20,8 +20,8 @@ $height = $height ?? 300;
     </div>
     <div class="bottom" style="top: {$height - 65}px;">
         <div class="left">
-            <a href="{$user.home}">
-                <img src="{$user.portrait}" />
+            <a href="{$visitor.home}">
+                <img src="{$visitor.portrait}" />
             </a>
             <ul class="menu">
                 <llist name="{$menu}" id="item">
