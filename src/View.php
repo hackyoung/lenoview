@@ -79,6 +79,8 @@ class View
     /**
      * string file View对象的模板文件的绝对路径文件
      */
+    private $path;
+
     private $file;
 
     /**
@@ -101,7 +103,7 @@ class View
      */
     public function __construct($view, array $data = [])
     {
-        $this->file = $view;
+        $this->path = $view;
         if(isset($data['__head__'])) {
             $head = array_merge($this->__head__, $data['__head__']);
         } else {
@@ -261,14 +263,20 @@ class View
      */
     public function getFile() 
     {
-        $view = preg_replace_callback('/^\w\./U', function($matches) {
+        if(!$this->file) {
+            $this->file = $this->searchFile();
+        }
+        return $this->file;
+        /*
+        $view = preg_replace_callback('/^\w+\./U', function($matches) {
             return $matches[0] . '.' . $this->theme;
-        }, $this->file);
+        }, $this->path);
         try {
             return $this->searchFile($view);
         } catch(\Exception $e) {
-            return $this->searchFile($this->file);
+            return $this->searchFile($this->path);
         }
+         */
     }
 
     public function addJs($js) {
@@ -345,23 +353,17 @@ class View
         }
     }
 
-    protected function searchFile($view)
+    protected function searchFile()
     {
-        $base_dir = false;
-        foreach(self::$dir as $prefix => $dir) {
-            if(preg_match('/^'.$prefix.'/', $view)) {
-                $base_dir = $dir;
-                $rest_view = preg_replace('/^'.$prefix.'\./','', $view);
-                break;
-            }
-        }
-        if(!is_array($base_dir)) {
+        $path = $this->path;
+        $base_dirs = $this->getBaseDirs();
+        if(!is_array($base_dirs)) {
             throw new \InvalidArgumentException(
-                sprintf("%s is not exists", $view)
+                sprintf("%s is not exists", $path)
             );
         }
-        $last = str_replace(".", "/", $rest_view) . self::SUFFIX;
-        foreach($base_dir as $dir) {
+        $last = str_replace(".", "/", $this->path) . self::SUFFIX;
+        foreach($base_dirs as $dir) {
             $file = preg_replace('/\/$/', '', $dir) . '/' . $last;
             if(is_file($file)) {
                 return $file;
@@ -370,6 +372,23 @@ class View
         throw new \InvalidArgumentException(
             sprintf("%s is not exists", $view)
         );
+    }
+
+    protected function getBaseDirs()
+    {
+        $path = $this->path;
+        foreach(self::$dir as $prefix => $dirs) {
+            $rest_path = preg_replace('/^'.$prefix.'\./','', $path);
+            if($rest_path === $path) {
+                continue;
+            }
+            $this->path = $rest_path;
+            $theme_dirs = array_map(function($dir) {
+                return $dir . '/' . $this->theme;
+            }, $dirs);
+            return array_merge($theme_dirs, $dirs);
+        }
+        return false;
     }
 
     public static function beginJsContent($src)
