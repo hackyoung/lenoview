@@ -20,6 +20,8 @@ class Template
     protected $view;
 
     protected $node_token_class = [
+        '\Leno\View\Token\SingletonContentBegin',
+        '\Leno\View\Token\SingletonContentEnd',
         '\Leno\View\Token\JsContentBegin',
         '\Leno\View\Token\JsContentEnd',
         '\Leno\View\Token\CssContentBegin',

@@ -1,6 +1,8 @@
 <div>
     hello world
 </div>
-<script leno-type="locale">
-    console.log('just a script');
-</script>
+<singleton>
+    <div>
+        这里之期待有一个
+    </div>
+</singleton>

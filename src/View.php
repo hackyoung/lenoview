@@ -21,6 +21,8 @@ class View
 
     protected static $css_content = [];
 
+    protected static $singleton_content = [];
+
     protected static $js_src = '';
 
     /**
@@ -174,6 +176,9 @@ class View
         if($this->hasFragment('___css___')) {
             self::showCss();
         }
+        if($this->hasFragment('___singleton___')) {
+            self::showSingleton();
+        }
     }
 
     public function render()
@@ -267,16 +272,6 @@ class View
             $this->file = $this->searchFile();
         }
         return $this->file;
-        /*
-        $view = preg_replace_callback('/^\w+\./U', function($matches) {
-            return $matches[0] . '.' . $this->theme;
-        }, $this->path);
-        try {
-            return $this->searchFile($view);
-        } catch(\Exception $e) {
-            return $this->searchFile($this->path);
-        }
-         */
     }
 
     public function addJs($js) {
@@ -443,6 +438,30 @@ class View
     {
         $content = trim($content) . "\n";
         self::$css_content[md5($content)] = $content;
+    }
+
+    public static function beginSingletonContent()
+    {
+        ob_start();
+    }
+
+    public static function endSingletonContent()
+    {
+        $content = ob_get_contents();
+        if(ob_end_clean()) {
+            return self::appendSingletonContent($content);
+        }
+    }
+
+    public static function showSingleton()
+    {
+        echo implode('', self::$singleton_content);
+    }
+
+    public static function appendSingletonContent($content)
+    {
+        $content = trim($content) . "\n";
+        self::$singleton_content[md5($content)] = $content;
     }
 
     public static function setTemplateClass($templateClass)

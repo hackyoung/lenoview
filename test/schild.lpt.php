@@ -1,10 +1,11 @@
 <?php
-$pager = [
-    'current' => 4,
-    'total' => 10
-];
+$h = [1,1,1,1,1,1,1,1,];
 ?>
-<extend name="test.child">
-    <fragment name="hello" type="after">hello world</fragment>
-    <view name="leno._element.pager" data="{$pager}" />
+<extend name="test.father">
+    <fragment name="body">
+        hello world
+    </fragment>
+    <llist name="{$h}" id="i">
+        <view name="test.testjs" />
+    </llist>
 </extend>

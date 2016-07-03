@@ -4,4 +4,4 @@
         hehehe
     </fragment>
 </p>
-<fragment name="___css___"></fragment>
+<fragment name="___singleton___"></fragment>
