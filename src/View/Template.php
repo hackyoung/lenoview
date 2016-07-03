@@ -62,9 +62,9 @@ class Template
 
     public function display() 
     {
-        //if(!is_file($this->cachefile) || filemtime($this->cachefile) <= filemtime($this->view->getFile())) {
+        if(!is_file($this->cachefile) || filemtime($this->cachefile) <= filemtime($this->view->getFile())) {
             $this->compile();
-        //}
+        }
         return $this->cachefile;
     }
 
