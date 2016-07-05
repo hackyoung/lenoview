@@ -17,11 +17,11 @@ class View
 
     const TYPE_AFTER  = 'after';
 
-    protected static $js_content = [];
-
-    protected static $css_content = [];
-
-    protected static $singleton_content = [];
+    protected static $singleton = [
+        '___js___' => [],
+        '___css___' => [],
+        '___singleton___' => []
+    ];
 
     protected static $js_src = '';
 
@@ -170,15 +170,6 @@ class View
             extract($this->data);
         }
         include $this->template->display();
-        if($this->hasFragment('___js___')) {
-            self::showJs();
-        }
-        if($this->hasFragment('___css___')) {
-            self::showCss();
-        }
-        if($this->hasFragment('___singleton___')) {
-            self::showSingleton();
-        }
     }
 
     public function render()
@@ -328,6 +319,7 @@ class View
      */
     public function endFragment()
     {
+        $spe = ['___js___', '___css___', '___singleton___'];
         $temp = array_pop($this->temp_fragment);
         $name = $temp['name'];
         if(empty($name)) {
@@ -335,7 +327,11 @@ class View
         }
         $content = ob_get_contents();
         ob_end_clean();
-        $fragment = new Fragment($content);
+        if(in_array($name, $spe)) {
+            $fragment = new Fragment(self::showSingleton($name));
+        } else {
+            $fragment = new Fragment($content);
+        }
         if($this->child && $this->child->hasFragment($name)) {
             $fragment->setChild($this->child->getFragment($name));
         }
@@ -405,14 +401,12 @@ class View
     public static function appendJsContent($content)
     {
         $content = trim($content) . "\n";
-        self::$js_content[md5($content)] = $content;
+        self::$singleton['___js___'][md5($content)] = $content;
     }
 
     public static function showJs()
     {
-        echo "<script type='text/javascript'>\n";
-        echo implode('', self::$js_content);
-        echo "</script>\n";
+        return "<script type='text/javascript'>\n".implode('', self::$singleton['___js___'])."</script>\n";
     }
 
     public static function beginCssContent()
@@ -429,15 +423,13 @@ class View
     }
     public static function showCss()
     {
-        echo "<style type='text/css' rel='stylesheet'>\n";
-        echo implode('', self::$css_content);
-        echo "</style>\n";
+        return "<style type='text/css' rel='stylesheet'>\n".implode('', self::$singleton['___css___'])."</style>\n";
     }
 
     public static function appendCssContent($content)
     {
         $content = trim($content) . "\n";
-        self::$css_content[md5($content)] = $content;
+        self::$singleton['___css___'][md5($content)] = $content;
     }
 
     public static function beginSingletonContent()
@@ -453,15 +445,27 @@ class View
         }
     }
 
-    public static function showSingleton()
+    public function showSingleton($name)
     {
-        echo implode('', self::$singleton_content);
+        switch($name) {
+            case '___singleton___':
+                return self::showTheSingleton();
+            case '___js___':
+                return self::showJs();
+            case '___css___':
+                return self::showCss();
+        }
+    }
+
+    public static function showTheSingleton()
+    {
+        return implode('', self::$singleton['___singleton___']);
     }
 
     public static function appendSingletonContent($content)
     {
-        $content = trim($content) . "\n";
-        self::$singleton_content[md5($content)] = $content;
+        $content = $content . "\n";
+        self::$singleton['___singleton___'][md5($content)] = $content;
     }
 
     public static function setTemplateClass($templateClass)
