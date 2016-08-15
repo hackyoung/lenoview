@@ -361,7 +361,7 @@ class View
             }
         }
         throw new \InvalidArgumentException(
-            sprintf("%s is not exists", $view)
+            sprintf("%s is not exists", $path)
         );
     }
 
